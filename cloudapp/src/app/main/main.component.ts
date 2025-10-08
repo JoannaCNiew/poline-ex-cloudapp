@@ -1,17 +1,22 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { MatRadioChange } from '@angular/material/radio';
 import {
   AlertService,
   CloudAppEventsService,
   CloudAppRestService,
   Entity,
   HttpMethod,
-  Request,
-  RestErrorResponse
 } from '@exlibris/exl-cloudapp-angular-lib';
-import { TranslateService } from '@ngx-translate/core';
-import { Observable } from 'rxjs';
-import { finalize, tap } from 'rxjs/operators';
+import { Observable, forkJoin } from 'rxjs'; // Dodajemy forkJoin do multi-select
+import { finalize, tap, map } from 'rxjs/operators'; 
+import { TranslateService } from '@ngx-translate/core'; // Przywracamy TranslateService
+
+// --- INTERFEJS DANYCH EKSPORTOWYCH ---
+// (Przydatne, aby odseparować logikę aplikacji)
+interface PoExportData {
+  isbn: string;
+  quantity: number;
+}
+// --- KONIEC INTERFEJSU ---
 
 @Component({
   selector: 'app-main',
@@ -20,79 +25,131 @@ import { finalize, tap } from 'rxjs/operators';
 })
 export class MainComponent implements OnInit, OnDestroy {
 
+  window: Window = window; // Dla bezpiecznego użycia w kopowaniu
   loading = false;
-  selectedEntity: Entity | null = null;
-  apiResult: any;
-
+  apiResult: any; // Pozostawiamy dla kompatybilności z bazowym HTML, ale nie jest używane
+  
+  // KLUCZOWE ZMIENNE DLA MULTI-SELECT:
+  visibleEntities: Entity[] = []; // Encje z kontekstu Almy
+  selectedEntities: Entity[] = []; // Encje zaznaczone przez użytkownika
+  previewContent: string | null = null; // Zawartość pliku do podglądu
+  
   entities$: Observable<Entity[]>;
+  public alert: AlertService; // Zmienione na public dla dostępu w HTML
 
   constructor(
     private restService: CloudAppRestService,
     private eventsService: CloudAppEventsService,
-    private alert: AlertService,
-    private translate: TranslateService,
+    alert: AlertService, 
+    private translate: TranslateService, // Zostawiamy translate, jeśli jest w bazowej wersji
   ) {
-    this.entities$ = this.eventsService.entities$.pipe(tap(() => this.clear()));
+    this.alert = alert; 
+    
+    // Subskrypcja ODBIERA listę WIDOCZNYCH encji, a nie tylko wybranych
+    this.entities$ = this.eventsService.entities$.pipe(
+      tap(entities => {
+        this.loading = false;
+        // Ustawiamy listę encji, które są dostępne do wyboru w CloudApp
+        this.visibleEntities = entities || []; 
+        // Czyścimy WYBRANE encje, gdy zmienia się kontekst (np. przechodzimy na inną stronę)
+        this.selectedEntities = [];
+        this.previewContent = null;
+      })
+    );
   }
 
-  ngOnInit() {
+  ngOnInit() { }
+  ngOnDestroy(): void { }
+
+  // --- LOGIKA MULTI-SELECT (ODTWORENIE Z KODU INSPIRUJĄCEGO) ---
+  
+  isAllSelected(entities: Entity[]): boolean {
+    if (!entities || entities.length === 0) return false;
+    // Sprawdzamy, czy każda widoczna encja jest na liście wybranych
+    return entities.every(entity => this.selectedEntities.some(e => e.link === entity.link));
   }
 
-  ngOnDestroy(): void {
+  masterToggle(entities: Entity[]) {
+    const isAll = this.isAllSelected(entities);
+    // Jeśli wszystkie są wybrane -> odznacz, w przeciwnym razie -> zaznacz wszystkie
+    this.selectedEntities = isAll ? [] : [...entities];
   }
 
-  entitySelected(event: MatRadioChange) {
-    const value = event.value as Entity;
-    this.loading = true;
-    this.restService.call<any>(value.link)
-      .pipe(finalize(() => this.loading = false))
-      .subscribe({
-        next: result => this.apiResult = result,
-        error: error => this.alert.error('Failed to retrieve entity: ' + error.message)
-      });
+  toggleEntity(entity: Entity) {
+    const index = this.selectedEntities.findIndex(e => e.link === entity.link);
+    if (index === -1) {
+      this.selectedEntities.push(entity);
+    } else {
+      this.selectedEntities.splice(index, 1);
+    }
   }
 
+  isSelected(entity: Entity): boolean {
+    return this.selectedEntities.some(e => e.link === entity.link);
+  }
+  
+  // --- FUNKCJONALNOŚĆ BAZOWA USUNIĘTA (clear, entitySelected, update) ---
+  // Musimy tylko odtworzyć minimalne funkcje do czyszczenia i ustawiania języka:
+  
   clear() {
+    // Odświeżona funkcja clear do obsługi multi-select
+    this.selectedEntities = [];
+    this.previewContent = null;
     this.apiResult = null;
-    this.selectedEntity = null;
   }
-
-  update(value: any) {
-    const requestBody = this.tryParseJson(value)
-    if (!requestBody) return this.alert.error('Failed to parse json');
-
-    this.loading = true;
-    let request: Request = {
-      url: this.selectedEntity!.link,
-      method: HttpMethod.PUT,
-      requestBody
-    };
-    this.restService.call(request)
-      .pipe(finalize(() => this.loading = false))
-      .subscribe({
-        next: result => {
-          this.apiResult = result;
-          this.eventsService.refreshPage().subscribe(
-            () => this.alert.success('Success!')
-          );
-        },
-        error: (e: RestErrorResponse) => {
-          this.alert.error('Failed to update data: ' + e.message);
-          console.error(e);
-        }
-      });
-  }
-
+  
   setLang(lang: string) {
     this.translate.use(lang);
   }
+  
+  // Usunięto: entitySelected, update, tryParseJson (ponieważ nie są częścią eksportu)
 
-  private tryParseJson(value: any) {
-    try {
-      return JSON.parse(value);
-    } catch (e) {
-      console.error(e);
+  // --- LOGIKA EKSPORTU (ZASLEPIONA NA RAZIE, WYWOŁYwana z HTML) ---
+
+  generatePreview() {
+    if (this.selectedEntities.length === 0) {
+      this.alert.warn('Wybierz co najmniej jedną linię zamówienia do przetworzenia.');
+      return;
     }
-    return undefined;
+
+    this.loading = true;
+    
+    // TYMCZASOWY ZASLEP: Logika pobierania i przetwarzania będzie tutaj:
+    this.previewContent = `Eksport wygenerowany dla ${this.selectedEntities.length} encji.\n\nISBN\tQuantity\n1234567890\t1`;
+    this.loading = false;
+    this.alert.success('Podgląd generowania...');
   }
+  
+  // Metoda do pobierania pliku (bez zmian)
+  downloadFile() {
+    if (!this.previewContent) {
+      this.alert.error('Brak zawartości do pobrania. Najpierw wygeneruj podgląd.');
+      return;
+    }
+
+    const blob = new Blob([this.previewContent], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'po_line_export.txt';
+    a.style.display = 'none';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    this.alert.success('Plik TXT został pobrany!');
+  }
+
+  // Metoda do kopiowania (rozwiązanie błędu TS)
+  copyToClipboard(textArea: HTMLTextAreaElement) {
+    if (!this.previewContent) {
+      this.alert.error('Brak zawartości do skopiowania. Najpierw wygeneruj podgląd.');
+      return;
+    }
+    textArea.select();
+    this.window.document.execCommand('copy');
+    this.alert.success('Zawartość została skopiowana do schowka!');
+  }
+
 }

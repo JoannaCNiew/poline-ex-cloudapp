@@ -41,6 +41,7 @@ import { SettingsComponent } from './settings/settings.component';
         AlertModule,
         FormsModule,
         ReactiveFormsModule,
+        SelectEntitiesModule,
         CloudAppTranslateModule.forRoot()],
     providers: [
         { provide: APP_INITIALIZER, useFactory: () => () => true, deps: [InitService], multi: true },
