@@ -4,20 +4,37 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { SelectEntitiesModule } from '@exlibris/eca-components';
 import { AlertModule, CloudAppTranslateModule, InitService, MaterialModule } from '@exlibris/exl-cloudapp-angular-lib';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatButtonModule } from '@angular/material/button';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatIconModule } from '@angular/material/icon';
+import { CommonModule } from '@angular/common';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MainComponent } from './main/main.component';
+import { TopmenuComponent } from './topmenu/topmenu.component';
+import { SettingsComponent } from './settings/settings.component'; 
 
 @NgModule({
     declarations: [
         AppComponent,
-        MainComponent
+        MainComponent,
+        TopmenuComponent,
+        SettingsComponent
     ],
     bootstrap: [AppComponent],
     imports: [
+        CommonModule,
         MaterialModule,
+        MatProgressSpinnerModule,
+        MatCheckboxModule,
+        MatRadioModule,
+        MatButtonModule,
+        MatIconModule,
         BrowserModule,
         BrowserAnimationsModule,
         AppRoutingModule,
