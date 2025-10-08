@@ -1,0 +1,24 @@
+<app-topmenu>
+  <div buttons>
+    <button mat-flat-button type="button" color="primary" (click)="save()" [disabled]="!(form.dirty)">Save</button>
+  </div>
+</app-topmenu>
+<div class="loading-shade" *ngIf="saving">
+  <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+</div>
+<div *ngIf="form">
+  <form [formGroup]="form">
+    <section class="settings-section">
+      <mat-checkbox labelPosition="before" formControlName="showValue">Show Value:</mat-checkbox>
+    </section>
+    <section class="settings-section">
+      <label class="example-margin">Page Size:</label>
+      <mat-radio-group formControlName="pageSize">
+        <mat-radio-button class="settings-control" [value]="5">5</mat-radio-button>
+        <mat-radio-button class="settings-control" [value]="10">10</mat-radio-button>
+        <mat-radio-button class="settings-control" [value]="20">20</mat-radio-button>
+      </mat-radio-group>
+    </section>
+  </form>
+  <pre *ngIf="form.get('showValue')?.value">{{ form.value | json }}</pre>
+</div>

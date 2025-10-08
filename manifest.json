@@ -2,5 +2,9 @@
    "id": "po-line-export",
    "title": "PO Line Export",
    "subtitle": "CloudApp",
-   "author": "jcn"
+   "author": "jcn",
+   "description": "This application enables downloading txt files with values from PO Lines",
+   "pages": {
+      "settings": "/#/settings"
+   }
 }

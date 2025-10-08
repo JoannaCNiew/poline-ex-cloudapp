@@ -1,9 +1,13 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { MainComponent } from './main/main.component';
+import { SettingsComponent } from './settings/settings.component';
+import { TopmenuComponent } from './topmenu/topmenu.component';
 
 const routes: Routes = [
   { path: '', component: MainComponent },
+  { path: 'settings', component: SettingsComponent },
+  { path: 'topmenu', component: TopmenuComponent },
 ];
 
 @NgModule({
