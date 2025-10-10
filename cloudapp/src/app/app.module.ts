@@ -1,5 +1,5 @@
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { APP_INITIALIZER, inject, NgModule } from '@angular/core';
+import { APP_INITIALIZER, NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { BrowserModule } from '@angular/platform-browser';
@@ -18,13 +18,15 @@ import { AppComponent } from './app.component';
 import { MainComponent } from './main/main.component';
 import { TopmenuComponent } from './topmenu/topmenu.component';
 import { SettingsComponent } from './settings/settings.component'; 
+import { MultiSelectComponent } from './multi-select/multi-select.component'; // <--- DODANY IMPORT
 
 @NgModule({
     declarations: [
         AppComponent,
         MainComponent,
         TopmenuComponent,
-        SettingsComponent
+        SettingsComponent,
+        MultiSelectComponent // <--- DODANA DEKLARACJA
     ],
     bootstrap: [AppComponent],
     imports: [

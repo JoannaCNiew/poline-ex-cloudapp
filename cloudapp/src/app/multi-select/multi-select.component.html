@@ -1,0 +1,22 @@
+<app-topmenu>
+  <div buttons>
+    <!-- Przycisk Clear/Reset - wywołuje metodę .clear() na instancji komponentu ECA. -->
+    <button mat-flat-button color="secondary" [disabled]="selectedEntities.length==0" (click)="selectEntities.clear()">Clear</button>
+  </div>
+</app-topmenu>
+<div class="cloudapp-body">
+    <h2>Multi-select Test View</h2>
+    <!-- Licznik pokazuje wybrane encje (selectedEntities.length) oraz całkowity count (ilość widocznych) -->
+    <p>A total of <strong>{{ selectedEntities.length }}</strong> items have been selected. (Count: {{ count }})</p>
+    
+    <!-- Komunikat, gdy lista jest pusta -->
+    <div *ngIf="count === 0">Please navigate to a list.</div>
+    
+    <!-- KLUCZOWY KOMPONENT ECA: Automatycznie pobiera listę encji i wyświetla checkboxy -->
+    <!-- Zakładamy, że SelectEntitiesModule jest zaimportowany w AppModule.ts (co naprawia błędy NG8001/NG8002). -->
+    <eca-select-entities #selectEntities 
+        [(selected)]="selectedEntities"
+        (count)="count = $event"
+        >
+    </eca-select-entities>
+</div>
