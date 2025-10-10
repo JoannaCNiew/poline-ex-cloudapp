@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import {
   AlertService,
@@ -10,9 +10,10 @@ import {
 } from '@exlibris/exl-cloudapp-angular-lib';
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, forkJoin } from 'rxjs';
-import { finalize, tap, map, filter } from 'rxjs/operators'; // DODANY FILTER
+import { finalize, tap, map } from 'rxjs/operators';
+import { SelectEntitiesComponent } from '@exlibris/eca-components'; // Import dla ViewChild
 
-// Interface for export data (ISBN, Quantity)
+// Interfejs dla danych eksportu (ISBN, Quantity)
 export interface PoExportData {
   isbn: string;
   quantity: number;
@@ -25,27 +26,28 @@ export interface PoExportData {
 })
 export class MainComponent implements OnInit, OnDestroy {
 
+  // ViewChild dla komponentu ECA, aby móc wywołać metodę clear()
+  @ViewChild('selectEntities') selectEntities!: SelectEntitiesComponent; 
+
   loading = false;
   
-  // Visible entities (Alma context)
+  // Lista encji widocznych w kontekście Almy
   visibleEntities: Entity[] = []; 
   
-  // Selected entities (chosen by user)
+  // Lista encji ZAZNACZONYCH przez użytkownika
   selectedEntities: Entity[] = []; 
   
   previewContent: string | null = null;
   
-  // Export fields (headers)
+  // Pola do eksportu (nagłówki)
   exportFields = [
     { name: 'isbn', label: 'ISBN' },
     { name: 'quantity', label: 'Quantity' }
   ];
   
-  entityFilterTypes: EntityType[] = [EntityType.PO_LINE];
-
   entities$: Observable<Entity[]>;
   public alert: AlertService; 
-  window: Window = window; // For safe use in copying
+  window: Window = window;
 
   constructor(
     private restService: CloudAppRestService,
@@ -56,67 +58,46 @@ export class MainComponent implements OnInit, OnDestroy {
   ) {
     this.alert = alert;
 
-    // KEY CHANGE: Subscription fetches the list of VISIBLE entities from Alma context.
+    // Subskrypcja pobiera listę WIDOCZNYCH encji z kontekstu Almy.
     this.entities$ = this.eventsService.entities$.pipe(
-      // Wymuszamy, aby stream przepuścił tylko niepuste listy (czasem to pomaga)
-      // filter(entities => entities.length > 0), 
       tap(entities => {
         this.loading = false;
         
-        // Zawsze zapisujemy, co przyszło, nawet jeśli jest puste.
+        // W kontekście listy PO Line, entities$ zwraca listę widocznych encji.
+        // Komponent ECA sam zajmuje się powiązaniem, ale my używamy tej tablicy do licznika.
         this.visibleEntities = entities || []; 
         
-        // Resetujemy stan, tylko jeśli kontekst się ZMIENIŁ
-        this.selectedEntities = [];
+        // Resetujemy stan po zmianie kontekstu
+        this.selectedEntities = []; 
         this.previewContent = null;
       })
     );
   }
 
   ngOnInit() { 
-    // Initialization of translations (if necessary)
+    // Subskrybujemy strumień, aby aktywować pobieranie encji w MainComponent
+    this.entities$.subscribe();
   }
 
   ngOnDestroy(): void { }
 
-  /** Method that clears application state: clears selection and preview. */
-  clear() {
-    this.selectedEntities = [];
-    this.previewContent = null;
+  /** Metoda aktualizująca widoczną liczbę encji (wywoływana przez (count) z ECA) */
+  updateVisibleCount(count: number) {
+    // Ponieważ ECA-Select-Entities nie jest powiązany z visibleEntities w HTML, 
+    // używamy tej metody do synchronizacji licznika.
+    // UWAGA: Tracimy tutaj listę encji, ale zyskujemy działający interfejs i licznik.
+    this.visibleEntities.length = count; 
   }
   
-  // --- MANUAL MULTI-SELECT LOGIC ---
+  /** Metoda czyszcząca stan aplikacji: czyści wybór. */
+  clearSelection() {
+    // Wywołuje metodę clear() na komponencie ECA (przez ViewChild)
+    this.selectEntities.clear(); 
+  }
   
-  /** Checks if all entities are selected */
-  isAllSelected(entities: Entity[]): boolean {
-    if (!entities || entities.length === 0) return false;
-    return entities.every(entity => this.selectedEntities.some(e => e.link === entity.link));
-  }
+  // --- LOGIKA EKSPORTU (PRZENIESIONA) ---
 
-  /** Select/Deselect all visible entities */
-  masterToggle(entities: Entity[]) {
-    const isAll = this.isAllSelected(entities);
-    this.selectedEntities = isAll ? [] : [...entities];
-  }
-
-  /** Adds/removes a single entity from the selected list */
-  toggleEntity(entity: Entity) {
-    const index = this.selectedEntities.findIndex(e => e.link === entity.link);
-    if (index === -1) {
-      this.selectedEntities.push(entity);
-    } else {
-      this.selectedEntities.splice(index, 1);
-    }
-  }
-
-  /** Checks if a given entity is selected */
-  isSelected(entity: Entity): boolean {
-    return this.selectedEntities.some(e => e.link === entity.link);
-  }
-  // --- END OF MANUAL LOGIC ---
-
-
-  /** Generates export preview: fetches data, processes, and saves to previewContent. */
+  /** Generuje podgląd eksportu: pobiera dane, przetwarza i zapisuje do previewContent. */
   onGenerateExport() {
     this.loading = true;
 
@@ -148,7 +129,7 @@ export class MainComponent implements OnInit, OnDestroy {
       });
   }
 
-  /** Generates TXT file content based on API data. */
+  /** Generuje zawartość pliku TXT na podstawie danych z API. */
   private generateFileContent(responses: any[]): string {
     const headers = this.exportFields.map(field => field.label).join('\t');
     let fileContent = `# Eksport PO Line\n${headers}\n`; 
@@ -169,7 +150,7 @@ export class MainComponent implements OnInit, OnDestroy {
     return fileContent;
   }
 
-  /** Copies preview content to clipboard. */
+  /** Kopiuje zawartość podglądu do schowka. */
   copyToClipboard(textArea: HTMLTextAreaElement) {
     if (!this.previewContent) {
       this.alert.error(this.translate.instant('App.NoContentToCopy'));
@@ -181,7 +162,7 @@ export class MainComponent implements OnInit, OnDestroy {
     this.alert.success(this.translate.instant('App.CopySuccess'));
   }
   
-  /** Initiates TXT file download. */
+  /** Uruchamia pobieranie pliku TXT. */
   downloadFile() {
     if (!this.previewContent) {
       this.alert.error(this.translate.instant('App.NoContentToDownload'));

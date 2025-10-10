@@ -4,7 +4,7 @@
     <mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
 
     <div class="main-content">
-        <!-- Komponent będzie widoczny, jeśli są widoczne encje -->
+        <!-- ZMIANA: Widok jest aktywowany, gdy lista encji jest niepusta -->
         <ng-container *ngIf="visibleEntities.length > 0; then entitylist; else noentities"></ng-container>
 
         <!-- Szablon dla braku encji -->
@@ -18,7 +18,7 @@
         <!-- SZABLON WIDOCZNY PO OTRZYMANIU ENCJ -->
         <ng-template #entitylist>
             <div class="cloudapp-body">
-                <!-- Pierwsza karta: Wybór encji (RĘCZNY MULTI-SELECT) -->
+                <!-- Pierwsza karta: Wybór encji (TERAZ UŻYWAMY ECA-SELECT-ENTITIES) -->
                 <mat-card>
                     <mat-card-header>
                         <mat-card-title>
@@ -28,28 +28,16 @@
                     <mat-card-content>
                         
                         <div class="eca-actions" style="margin-bottom: 15px;">
-                            <!-- Przycisk do czyszczenia wyboru -->
-                            <button mat-flat-button color="secondary" (click)="clear()" [disabled]="selectedEntities.length === 0">Wyczyść wybór</button>
+                            <!-- Przycisk do czyszczenia wyboru (metoda musi być w komponencie TS) -->
+                            <!-- Uwaga: clear() musi być wywoływane w TS komponentu, jeśli chcemy działać na this.selectedEntities -->
+                            <button mat-flat-button color="secondary" (click)="clearSelection()" [disabled]="selectedEntities.length === 0">Wyczyść wybór</button>
                         </div>
 
-                        <!-- Zaznacz/Odznacz wszystko (związany z masterToggle) -->
-                        <mat-checkbox 
-                            [checked]="isAllSelected(visibleEntities)"
-                            [indeterminate]="selectedEntities.length > 0 && !isAllSelected(visibleEntities)"
-                            (change)="masterToggle(visibleEntities)">
-                            Zaznacz/Odznacz wszystko
-                        </mat-checkbox>
-                        
-                        <mat-divider style="margin-top: 5px;"></mat-divider>
-                        
-                        <!-- Lista encji do wyboru (związany z toggleEntity) -->
-                        <mat-list>
-                            <mat-list-item *ngFor="let entity of visibleEntities">
-                                <mat-checkbox [checked]="isSelected(entity)" (change)="toggleEntity(entity)">
-                                    {{ entity.description }}
-                                </mat-checkbox>
-                            </mat-list-item>
-                        </mat-list>
+                        <!-- KLUCZOWY KOMPONENT Z eca-components -->
+                        <eca-select-entities #selectEntities
+                            [(selected)]="selectedEntities"       
+                            (count)="updateVisibleCount($event)"> <!-- Używamy count do zliczenia wszystkich widocznych encji -->
+                        </eca-select-entities>
 
                     </mat-card-content>
                 </mat-card>
@@ -64,7 +52,7 @@
                     </mat-card-content>
                 </mat-card>
 
-                <!-- Trzecia karta: Podgląd i eksport (POJAWIA SIĘ PO WYGENEROWANIU) -->
+                <!-- Trzecia karta: Podgląd i eksport -->
                 <mat-card *ngIf="previewContent">
                     <mat-card-header>
                         <mat-card-title>Podgląd Pliku TXT</mat-card-title>
@@ -91,8 +79,4 @@
             </div>
         </ng-template>
     </div>
-</div>
-
-<div class="loading-shade" *ngIf="loading">
-  <mat-spinner diameter="50"></mat-spinner>
 </div>
