@@ -1,52 +1,82 @@
-<div *ngIf="entities$ | async as entities">
-  <ng-container *ngIf="entities.length > 0; then entitylist; else noentities"></ng-container>
-  <ng-template #noentities>
-    <h1>Welcome!</h1>
-    <p>Use this sample app to get you started. The app includes the following:</p>
-    <ul>
-      <li>Listens on the <code>entities$</code> Observable</li>
-      <li>Performs an API call using the <code>restService</code> service</li>
-      <li>Updates the object using the <code>restService</code> service</li>
-      <li>Refreshes the page in Alma</li>
-      <li translate><span translate>translatedExampleText</span> (<a (click)="setLang('en')">en</a>/<a (click)="setLang('es')">es</a>)</li>
-    </ul>
-    <p>Use these building blocks to be on your way to developing your own Cloud App.</p>
-    <div class="highlight">Navigate to a page in Alma to view a list of entities.</div>
-  </ng-template>
+<app-topmenu></app-topmenu>
 
-  <ng-template #entitylist>
-    <div class="eca-actions">
-      <button mat-flat-button color="secondary" (click)="clear()" [disabled]="!selectedEntity">Clear</button>
-      <button mat-flat-button color="primary" (click)="update(apiResultArea.value)"
-        [disabled]="!apiResult || loading">Update
-      </button>
+<div class="cloudapp-body">
+    <mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+
+    <div class="main-content">
+        <!-- ZMIANA: Widok jest aktywowany, gdy lista encji jest niepusta -->
+        <ng-container *ngIf="visibleEntities.length > 0; then entitylist; else noentities"></ng-container>
+
+        <!-- Szablon dla braku encji -->
+        <ng-template #noentities>
+            <div class="cloudapp-body">
+                <h1>Witaj w CloudApp do Eksportu PO Line</h1>
+                <p>Aby rozpocząć, przejdź do listy zamówień (PO Line List) w Almie. Ta aplikacja automatycznie wyświetli widoczne tam pozycje, które możesz zaznaczyć i wyeksportować.</p>
+            </div>
+        </ng-template>
+
+        <!-- SZABLON WIDOCZNY PO OTRZYMANIU ENCJ -->
+        <ng-template #entitylist>
+            <div class="cloudapp-body">
+                <!-- Pierwsza karta: Wybór encji (TERAZ UŻYWAMY ECA-SELECT-ENTITIES) -->
+                <mat-card>
+                    <mat-card-header>
+                        <mat-card-title>
+                            Wybór linii zamówienia ({{ selectedEntities.length }}/{{ visibleEntities.length }})
+                        </mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content>
+                        
+                        <div class="eca-actions" style="margin-bottom: 15px;">
+                            <!-- Przycisk do czyszczenia wyboru (metoda musi być w komponencie TS) -->
+                            <!-- Uwaga: clear() musi być wywoływane w TS komponentu, jeśli chcemy działać na this.selectedEntities -->
+                            <button mat-flat-button color="secondary" (click)="clearSelection()" [disabled]="selectedEntities.length === 0">Wyczyść wybór</button>
+                        </div>
+
+                        <!-- KLUCZOWY KOMPONENT Z eca-components -->
+                        <eca-select-entities #selectEntities
+                            [(selected)]="selectedEntities"       
+                            (count)="updateVisibleCount($event)"> <!-- Używamy count do zliczenia wszystkich widocznych encji -->
+                        </eca-select-entities>
+
+                    </mat-card-content>
+                </mat-card>
+                
+                <!-- Druga karta: Przycisk GENERUJĄCY (POJAWIA SIĘ PO ZAZNACZENIU) -->
+                <mat-card *ngIf="selectedEntities.length > 0 && !previewContent">
+                    <mat-card-content>
+                        <p>Wybrano <strong>{{ selectedEntities.length }}</strong> linii zamówienia do przetworzenia.</p>
+                        <button mat-raised-button color="primary" (click)="onGenerateExport()" [disabled]="loading">
+                            <mat-icon>cloud_download</mat-icon> Generuj podgląd eksportu
+                        </button>
+                    </mat-card-content>
+                </mat-card>
+
+                <!-- Trzecia karta: Podgląd i eksport -->
+                <mat-card *ngIf="previewContent">
+                    <mat-card-header>
+                        <mat-card-title>Podgląd Pliku TXT</mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <mat-form-field appearance="outline" style="width: 100%;">
+                            <mat-label>Zawartość pliku TXT (ISBN i Quantity)</mat-label>
+                            <textarea matInput rows="10" [value]="previewContent" readonly #exportContent></textarea>
+                        </mat-form-field>
+
+                        <div class="export-actions">
+                            <!-- Opcja Kopiowania -->
+                            <button mat-raised-button color="accent" (click)="copyToClipboard(exportContent)">
+                                <mat-icon>content_copy</mat-icon> Kopiuj do schowka
+                            </button>
+                            <!-- Opcja Pobierania -->
+                            <button mat-raised-button color="primary" (click)="downloadFile()">
+                                <mat-icon>save_alt</mat-icon> Pobierz plik TXT
+                            </button>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+
+            </div>
+        </ng-template>
     </div>
-    <h1>Entities</h1>
-    <mat-card [style.display]="apiResult ? '' : 'none'">
-      <mat-card-header>
-        <mat-card-title>API Result</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <textarea #apiResultArea [value]="apiResult | json"></textarea>
-      </mat-card-content>
-    </mat-card>
-    <mat-card [style.display]="selectedEntity ? '' : 'none'">
-      <mat-card-header>
-        <mat-card-title>Selected Entity</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <pre>{{selectedEntity | json}}</pre>
-      </mat-card-content>
-    </mat-card>
-    <label id="entities-radio-group-label">Select an entity:</label>
-    <mat-radio-group aria-labelledby="entities-radio-group-label" class="entities-radio-group"
-      [(ngModel)]="selectedEntity" (change)="entitySelected($event)">
-      <mat-radio-button *ngFor="let entity of entities" [value]="entity">
-        {{entity.description}}
-      </mat-radio-button>
-    </mat-radio-group>
-  </ng-template>
-</div>
-<div class="loading-shade" *ngIf="loading">
-  <mat-spinner diameter="50"></mat-spinner>
 </div>
