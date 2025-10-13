@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, ElementRef } from '@angular/core'; // DODANO ElementRef
 import { HttpClient } from '@angular/common/http';
 import {
   AlertService,
@@ -11,9 +11,9 @@ import {
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, forkJoin } from 'rxjs';
 import { finalize, tap, map } from 'rxjs/operators';
-import { SelectEntitiesComponent } from '@exlibris/eca-components';
+import { SelectEntitiesComponent } from '@exlibris/eca-components'; 
 
-// Interface for export data (ISBN, Quantity)
+// Interfejs dla danych eksportu (ISBN, Quantity)
 export interface PoExportData {
   isbn: string;
   quantity: number;
@@ -27,6 +27,8 @@ export interface PoExportData {
 export class MainComponent implements OnInit, OnDestroy {
 
   @ViewChild('selectEntities') selectEntities!: SelectEntitiesComponent; 
+  // KLUCZOWA ZMIANA: Dodajemy @ViewChild dla #exportTextArea
+  @ViewChild('exportTextArea') exportTextAreaRef!: ElementRef<HTMLTextAreaElement>; 
 
   loading = false;
   
@@ -90,7 +92,6 @@ export class MainComponent implements OnInit, OnDestroy {
    * Główna metoda wywoływana po kliknięciu "Generuj podgląd eksportu"
    */
   onGenerateExport() {
-    console.log('DEBUG START: onGenerateExport uruchomiony.');
     this.loading = true;
 
     if (this.selectedEntities.length === 0) {
@@ -98,8 +99,6 @@ export class MainComponent implements OnInit, OnDestroy {
       this.alert.warn('Wybierz co najmniej jedną linię zamówienia do przetworzenia.');
       return;
     }
-    console.log(`DEBUG: Wybrano ${this.selectedEntities.length} encji. Rozpoczynamy zapytanie forkJoin.`);
-
 
     // Mapowanie wybranych encji na zapytania API do pobrania pełnych danych
     const requests = this.selectedEntities.map(entity => 
@@ -111,13 +110,11 @@ export class MainComponent implements OnInit, OnDestroy {
       .pipe(
         finalize(() => {
             this.loading = false;
-            console.log('DEBUG: Zakończono forkJoin (Loading = false).');
         }),
         map((responses: any[]) => {
-            console.log(`DEBUG: Otrzymano ${responses.length} odpowiedzi API. Sprawdzanie i generowanie treści.`);
-            
             // Sprawdzenie, czy API zwróciło błędy w odpowiedzi
             if (responses.some(r => r && r.error)) {
+                // Rzucamy błąd, który zostanie przechwycony przez blok error
                 throw new Error('Jedno lub więcej zapytań API zwróciło błąd.');
             }
             return this.generateFileContent(responses);
@@ -126,13 +123,11 @@ export class MainComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (fileContent: string) => {
           this.previewContent = fileContent; // <--- USTAWIENIE PODGLĄDU
-          console.log(`DEBUG SUKCES: Podgląd ustawiony. Długość treści: ${fileContent.length}`);
           this.alert.success(this.translate.instant('App.ExportSuccess', 
             { count: this.selectedEntities.length }
           ));
         },
         error: (err: any) => {
-          console.error('ERROR: Błąd subskrypcji eksportu:', err);
           this.alert.error(this.translate.instant('App.ExportError') + ': ' + (err.message || 'Nieznany błąd API'));
         }
       });
@@ -147,7 +142,7 @@ export class MainComponent implements OnInit, OnDestroy {
       
       // Jeżeli encja nie ma kluczowych danych, rzucamy pusty wiersz
       if (!poLine || !poLine.resource_metadata) {
-          console.warn('WARN: Encja PO Line nie zawiera resource_metadata. Pomijanie wiersza.', poLine);
+          console.warn('WARN: Encja PO Line nie zawiera resource_metadata. Pomijanie wiersza.');
           return;
       }
       
@@ -164,20 +159,20 @@ export class MainComponent implements OnInit, OnDestroy {
       }).join('\t');
       fileContent += `${row}\n`;
     });
-    
-    // Logowanie treści, która została wygenerowana
-    console.log(`DEBUG: Wygenerowano treść pliku (pierwsze 100 znaków): ${fileContent.substring(0, 100)}`);
-
     return fileContent;
   }
 
-  /** Copies preview content to clipboard. */
-  copyToClipboard(textArea: HTMLTextAreaElement) {
+  /** Kopiuje zawartość podglądu do schowka. */
+  // KLUCZOWA ZMIANA: Metoda nie przyjmuje już argumentu z HTML, tylko odwołuje się do ViewChild
+  copyToClipboard() {
     if (!this.previewContent) {
       this.alert.error(this.translate.instant('App.NoContentToCopy'));
       return;
     }
     
+    // Używamy referencji z ViewChild (ElementRef)
+    const textArea = this.exportTextAreaRef.nativeElement;
+
     textArea.select();
     this.window.document.execCommand('copy');
     this.alert.success(this.translate.instant('App.CopySuccess'));
@@ -190,6 +185,7 @@ export class MainComponent implements OnInit, OnDestroy {
       return;
     }
 
+    // Pozostała logika bez zmian
     const blob = new Blob([this.previewContent], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
 

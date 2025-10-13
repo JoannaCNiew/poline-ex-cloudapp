@@ -25,13 +25,36 @@
                         <mat-card-title>Opcje eksportu</mat-card-title>
                     </mat-card-header>
                     <mat-card-content>
-                        <p *ngIf="selectedEntities.length === 0">Zaznacz linie zamówienia, aby odblokować generowanie pliku.</p>
-                        <p *ngIf="selectedEntities.length > 0">Wybrano <strong>{{ selectedEntities.length }}</strong> linii. Kliknij poniżej, aby pobrać szczegóły i wygenerować plik.</p>
+                        <p *ngIf="selectedEntities.length === 0 && !previewContent">Zaznacz linie zamówienia, aby odblokować generowanie pliku.</p>
+                        <p *ngIf="selectedEntities.length > 0 && !previewContent">Wybrano <strong>{{ selectedEntities.length }}</strong> linii. Kliknij poniżej, aby pobrać szczegóły i wygenerować plik.</p>
                         
-                        <!-- Przycisk generowania jest teraz wyłączony, jeśli nic nie wybrano -->
-                        <button mat-raised-button color="primary" (click)="onGenerateExport()" [disabled]="loading || selectedEntities.length === 0">
-                            <mat-icon>cloud_download</mat-icon> Generuj podgląd eksportu
-                        </button>
+                        <!-- WIDOK, GDY PODGLĄD JEST JUŻ GENEROWANY -->
+                        <p *ngIf="previewContent">Podgląd został wygenerowany. Wybierz akcję poniżej:</p>
+
+                        <!-- Przyciski akcji: Zmienione style, aby wymusić pionowy układ -->
+                        <div class="export-actions" style="display: flex; flex-direction: column; align-items: flex-start; margin-top: 10px;">
+
+                            <!-- 1. PRZYCISK GENERUJĄCY (Wymaga zaznaczenia) -->
+                            <button mat-raised-button color="primary" (click)="onGenerateExport()" [disabled]="loading || selectedEntities.length === 0">
+                                <mat-icon>cloud_download</mat-icon> Generuj podgląd eksportu
+                            </button>
+                            
+                            <!-- 2. PRZYCISK KOPIUJ (Wymaga wygenerowania podglądu) -->
+                            <button mat-raised-button color="accent" 
+                                (click)="copyToClipboard()" 
+                                [disabled]="!previewContent || loading" 
+                                style="margin-top: 10px;"> <!-- Usunięto margin-left -->
+                                <mat-icon>content_copy</mat-icon> Kopiuj do schowka
+                            </button>
+
+                            <!-- 3. PRZYCISK POBIERZ (Wymaga wygenerowania podglądu) -->
+                            <button mat-raised-button color="primary" 
+                                (click)="downloadFile()" 
+                                [disabled]="!previewContent || loading" 
+                                style="margin-top: 10px;"> <!-- Usunięto margin-left -->
+                                <mat-icon>save_alt</mat-icon> Pobierz plik TXT
+                            </button>
+                        </div>
                         
                         <div *ngIf="loading" style="margin-top: 10px;">
                             <small>Pobieranie danych z Alma API...</small>
@@ -40,7 +63,7 @@
                     </mat-card-content>
                 </mat-card>
 
-                <!-- TRZECIA KARTA: Podgląd i eksport (POJAWIA SIĘ TYLKO PO WYGENEROWANIU) -->
+                <!-- TRZECIA KARTA: Podgląd (TERAZ WYŚWIETLA TYLKO PODGLĄD) -->
                 <mat-card *ngIf="previewContent">
                     <mat-card-header>
                         <mat-card-title>Podgląd Pliku TXT</mat-card-title>
@@ -48,19 +71,9 @@
                     <mat-card-content>
                         <mat-form-field style="width: 100%;"> 
                             <mat-label>Zawartość pliku TXT (ISBN i Quantity)</mat-label>
-                            <textarea matInput rows="10" [value]="previewContent" readonly #exportContent></textarea>
+                            <!-- Zmieniamy nazwę referencji na #exportTextArea i DEFINIUJEMY ją tutaj dla ViewChild -->
+                            <textarea matInput rows="10" [value]="previewContent" readonly #exportTextArea></textarea>
                         </mat-form-field>
-
-                        <div class="export-actions">
-                            <!-- Opcja Kopiowania -->
-                            <button mat-raised-button color="accent" (click)="copyToClipboard(exportContent)">
-                                <mat-icon>content_copy</mat-icon> Kopiuj do schowka
-                            </button>
-                            <!-- Opcja Pobierania -->
-                            <button mat-raised-button color="primary" (click)="downloadFile()">
-                                <mat-icon>save_alt</mat-icon> Pobierz plik TXT
-                            </button>
-                        </div>
                     </mat-card-content>
                 </mat-card>
                 
