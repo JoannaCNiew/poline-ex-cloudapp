@@ -6,6 +6,13 @@
 
 <h2 class="dialog-title-final" style="font-size: 24px; font-weight: bold;">Ustawienia eksportu</h2>
 
+<!-- NAGŁÓWEK AKCJI PRZENIESIONY NA GÓRĘ -->
+<div class="top-dialog-actions" style="display: flex; justify-content: flex-end; padding: 10px 0;">
+  <button mat-flat-button color="default" (click)="onCancel()">Anuluj</button>
+  <!-- Przycisk Zapisz jest nieaktywny, dopóki formularz nie zostanie zmieniony -->
+  <button mat-flat-button color="primary" (click)="saveSettings()" [disabled]="form.pristine || saving" style="margin-left: 8px;">Zapisz</button>
+</div>
+
 <div class="loading-shade" *ngIf="saving">
   <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
 </div>
@@ -67,10 +74,6 @@
     </div>
   </mat-dialog-content>
   
-  <mat-dialog-actions align="end" class="dialog-actions-bottom">
-    <button mat-flat-button color="default" (click)="onCancel()">Anuluj</button>
-    <!-- Przycisk Zapisz jest nieaktywny, dopóki formularz nie zostanie zmieniony -->
-    <button mat-flat-button color="primary" (click)="saveSettings()" [disabled]="form.pristine || saving">Zapisz</button>
-  </mat-dialog-actions>
+  <!-- USUNIĘTO: Stary kontener mat-dialog-actions -->
 
 </form>
