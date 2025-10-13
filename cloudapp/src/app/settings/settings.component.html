@@ -32,22 +32,23 @@
           
           <div class="field-item">
             
-            <!-- Uchwyt Drag and Drop - ZAWSZE WIDOCZNY W PIERWSZEJ LINII -->
+            <!-- 1. Uchwyt Drag and Drop - ZAWSZE WIDOCZNY W PIERWSZEJ LINII -->
             <mat-icon cdkDragHandle 
                       [style.visibility]="hoverIndex === i ? 'visible' : 'hidden'" 
                       class="drag-handle-icon">drag_indicator</mat-icon>
             
-            <!-- Etykieta pola (kliknięcie rozwija sekcję customLabel) -->
+            <!-- 2. Checkbox wyboru pola - PRZESUNIĘTY TUTAJ -->
+            <div class="field-checkbox-cell">
+              <mat-checkbox formControlName="selected"></mat-checkbox>
+            </div>
+
+            <!-- 3. Etykieta pola (kliknięcie rozwija sekcję customLabel) -->
             <div class="field-label-cell" (click)="toggleExpand(i)">
               <!-- Wyświetlamy label z FormControlem -->
               {{ fieldControl.value.label }}
               <mat-icon class="expand-arrow" [class.expanded]="expandedIndex === i">keyboard_arrow_down</mat-icon>
             </div>
             
-            <!-- Checkbox wyboru pola -->
-            <div class="field-checkbox-cell">
-              <mat-checkbox formControlName="selected"></mat-checkbox>
-            </div>
           </div>
 
           <!-- Rozwinięta sekcja do nadpisywania nazwy kolumny (pozostaje rozwijana) -->
