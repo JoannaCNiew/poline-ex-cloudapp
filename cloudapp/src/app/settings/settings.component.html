@@ -17,7 +17,7 @@
     <div class="columns-config">
       
       <p class="instruction-text" style="color: #616161; margin-bottom: 20px;">
-        Zaznacz pola, które chcesz wyeksportować. Kliknij na pole, aby zmienić nazwę kolumny i przeciągnij, aby zmienić kolejność.
+        Zaznacz pola, które chcesz wyeksportować. Kliknij na nazwę pola, aby zmienić nazwę kolumny i przeciągnij, aby zmienić kolejność.
       </p>
       
       <!-- Kontener Drag and Drop -->
@@ -26,13 +26,13 @@
         <!-- Pętla po wszystkich dostępnych polach -->
         <div *ngFor="let fieldControl of fieldsFormArray.controls; let i = index" [formGroupName]="i" cdkDrag
              class="field-row-container mat-elevation-z1"
-             [class.expanded]="expandedIndex === i"
              (mouseenter)="hoverIndex = i" 
-             (mouseleave)="hoverIndex = null">
+             (mouseleave)="hoverIndex = null"
+             [class.expanded]="expandedIndex === i">
           
           <div class="field-item">
             
-            <!-- Uchwyt Drag and Drop -->
+            <!-- Uchwyt Drag and Drop - ZAWSZE WIDOCZNY W PIERWSZEJ LINII -->
             <mat-icon cdkDragHandle 
                       [style.visibility]="hoverIndex === i ? 'visible' : 'hidden'" 
                       class="drag-handle-icon">drag_indicator</mat-icon>
@@ -50,11 +50,12 @@
             </div>
           </div>
 
-          <!-- Rozwinięta sekcja do nadpisywania nazwy kolumny -->
+          <!-- Rozwinięta sekcja do nadpisywania nazwy kolumny (pozostaje rozwijana) -->
           <div class="expanded-section" *ngIf="expandedIndex === i">
             <mat-form-field appearance="outline" class="custom-label-input">
-              <mat-label>Nadpisz nazwę kolumny (Domyślnie: {{ fieldControl.value.customLabel }})</mat-label>
-              <input matInput formControlName="customLabel" [placeholder]="fieldControl.value.customLabel">
+              <mat-label>Nadpisz nazwę kolumny</mat-label>
+              <!-- Używamy label jako placeholder -->
+              <input matInput formControlName="customLabel" [placeholder]="fieldControl.value.label">
             </mat-form-field>
             <!-- Pomocnicze info o nazwie pola w API -->
             <p class="api-name-info">Nazwa pola w API: **{{ fieldControl.value.name }}**</p>
