@@ -1,24 +1,74 @@
-<app-topmenu>
-  <div buttons>
-    <button mat-flat-button type="button" color="primary" (click)="save()" [disabled]="!(form.dirty)">Save</button>
-  </div>
-</app-topmenu>
+<div class="dialog-header-actions">
+  <button mat-flat-button color="default" (click)="onCancel()">
+    <mat-icon>arrow_back</mat-icon> Wróć
+  </button>
+</div>
+
+<h2 class="dialog-title-final" style="font-size: 24px; font-weight: bold;">Ustawienia eksportu</h2>
+
 <div class="loading-shade" *ngIf="saving">
   <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
 </div>
-<div *ngIf="form">
-  <form [formGroup]="form">
-    <section class="settings-section">
-      <mat-checkbox labelPosition="before" formControlName="showValue">Show Value:</mat-checkbox>
-    </section>
-    <section class="settings-section">
-      <label class="example-margin">Page Size:</label>
-      <mat-radio-group formControlName="pageSize">
-        <mat-radio-button class="settings-control" [value]="5">5</mat-radio-button>
-        <mat-radio-button class="settings-control" [value]="10">10</mat-radio-button>
-        <mat-radio-button class="settings-control" [value]="20">20</mat-radio-button>
-      </mat-radio-group>
-    </section>
-  </form>
-  <pre *ngIf="form.get('showValue')?.value">{{ form.value | json }}</pre>
-</div>
+
+<!-- Używamy form, tylko gdy jest zainicjowany -->
+<form [formGroup]="form" *ngIf="form">
+
+  <mat-dialog-content class="mat-dialog-content">
+    <div class="columns-config">
+      
+      <p class="instruction-text" style="color: #616161; margin-bottom: 20px;">
+        Zaznacz pola, które chcesz wyeksportować. Kliknij na pole, aby zmienić nazwę kolumny i przeciągnij, aby zmienić kolejność.
+      </p>
+      
+      <!-- Kontener Drag and Drop -->
+      <div formArrayName="availableFields" cdkDropList (cdkDropListDropped)="drop($event)">
+        
+        <!-- Pętla po wszystkich dostępnych polach -->
+        <div *ngFor="let fieldControl of fieldsFormArray.controls; let i = index" [formGroupName]="i" cdkDrag
+             class="field-row-container mat-elevation-z1"
+             [class.expanded]="expandedIndex === i"
+             (mouseenter)="hoverIndex = i" 
+             (mouseleave)="hoverIndex = null">
+          
+          <div class="field-item">
+            
+            <!-- Uchwyt Drag and Drop -->
+            <mat-icon cdkDragHandle 
+                      [style.visibility]="hoverIndex === i ? 'visible' : 'hidden'" 
+                      class="drag-handle-icon">drag_indicator</mat-icon>
+            
+            <!-- Etykieta pola (kliknięcie rozwija sekcję customLabel) -->
+            <div class="field-label-cell" (click)="toggleExpand(i)">
+              <!-- Wyświetlamy label z FormControlem -->
+              {{ fieldControl.value.label }}
+              <mat-icon class="expand-arrow" [class.expanded]="expandedIndex === i">keyboard_arrow_down</mat-icon>
+            </div>
+            
+            <!-- Checkbox wyboru pola -->
+            <div class="field-checkbox-cell">
+              <mat-checkbox formControlName="selected"></mat-checkbox>
+            </div>
+          </div>
+
+          <!-- Rozwinięta sekcja do nadpisywania nazwy kolumny -->
+          <div class="expanded-section" *ngIf="expandedIndex === i">
+            <mat-form-field appearance="outline" class="custom-label-input">
+              <mat-label>Nadpisz nazwę kolumny (Domyślnie: {{ fieldControl.value.customLabel }})</mat-label>
+              <input matInput formControlName="customLabel" [placeholder]="fieldControl.value.customLabel">
+            </mat-form-field>
+            <!-- Pomocnicze info o nazwie pola w API -->
+            <p class="api-name-info">Nazwa pola w API: **{{ fieldControl.value.name }}**</p>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+  
+  <mat-dialog-actions align="end" class="dialog-actions-bottom">
+    <button mat-flat-button color="default" (click)="onCancel()">Anuluj</button>
+    <!-- Przycisk Zapisz jest nieaktywny, dopóki formularz nie zostanie zmieniony -->
+    <button mat-flat-button color="primary" (click)="saveSettings()" [disabled]="form.pristine || saving">Zapisz</button>
+  </mat-dialog-actions>
+
+</form>
