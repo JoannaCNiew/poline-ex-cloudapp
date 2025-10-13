@@ -4,7 +4,7 @@
     <mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
 
     <div class="main-content">
-        <!-- ZMIANA: Widok jest aktywowany, gdy lista encji jest niepusta -->
+        <!-- Komponent będzie widoczny, jeśli są widoczne encje -->
         <ng-container *ngIf="visibleEntities.length > 0; then entitylist; else noentities"></ng-container>
 
         <!-- Szablon dla braku encji -->
@@ -18,7 +18,7 @@
         <!-- SZABLON WIDOCZNY PO OTRZYMANIU ENCJ -->
         <ng-template #entitylist>
             <div class="cloudapp-body">
-                <!-- Pierwsza karta: Wybór encji (TERAZ UŻYWAMY ECA-SELECT-ENTITIES) -->
+                <!-- Pierwsza karta: Wybór encji (generowany przez eca-select-entities) -->
                 <mat-card>
                     <mat-card-header>
                         <mat-card-title>
@@ -28,37 +28,47 @@
                     <mat-card-content>
                         
                         <div class="eca-actions" style="margin-bottom: 15px;">
-                            <!-- Przycisk do czyszczenia wyboru (metoda musi być w komponencie TS) -->
-                            <!-- Uwaga: clear() musi być wywoływane w TS komponentu, jeśli chcemy działać na this.selectedEntities -->
+                            <!-- Przycisk do czyszczenia wyboru -->
                             <button mat-flat-button color="secondary" (click)="clearSelection()" [disabled]="selectedEntities.length === 0">Wyczyść wybór</button>
                         </div>
 
                         <!-- KLUCZOWY KOMPONENT Z eca-components -->
                         <eca-select-entities #selectEntities
-                            [(selected)]="selectedEntities"       
-                            (count)="updateVisibleCount($event)"> <!-- Używamy count do zliczenia wszystkich widocznych encji -->
+                            [(selected)]="selectedEntities" >
                         </eca-select-entities>
 
                     </mat-card-content>
                 </mat-card>
                 
-                <!-- Druga karta: Przycisk GENERUJĄCY (POJAWIA SIĘ PO ZAZNACZENIU) -->
-                <mat-card *ngIf="selectedEntities.length > 0 && !previewContent">
+                <!-- Druga karta: PRZYCISK GENERUJĄCY (WIDOCZNA ZAWSZE, gdy są encje) -->
+                <mat-card *ngIf="visibleEntities.length > 0"> <!-- ZMIENIONY WARUNEK: visibleEntities.length > 0 -->
+                    <mat-card-header>
+                        <mat-card-title>Opcje eksportu</mat-card-title>
+                    </mat-card-header>
                     <mat-card-content>
-                        <p>Wybrano <strong>{{ selectedEntities.length }}</strong> linii zamówienia do przetworzenia.</p>
-                        <button mat-raised-button color="primary" (click)="onGenerateExport()" [disabled]="loading">
+                        <p *ngIf="selectedEntities.length === 0">Zaznacz linie zamówienia, aby odblokować generowanie pliku.</p>
+                        <p *ngIf="selectedEntities.length > 0">Wybrano <strong>{{ selectedEntities.length }}</strong> linii. Kliknij poniżej, aby pobrać szczegóły i wygenerować plik.</p>
+                        
+                        <!-- Przycisk generowania jest teraz wyłączony, jeśli nic nie wybrano -->
+                        <button mat-raised-button color="primary" (click)="onGenerateExport()" [disabled]="loading || selectedEntities.length === 0">
                             <mat-icon>cloud_download</mat-icon> Generuj podgląd eksportu
                         </button>
+                        
+                        <div *ngIf="loading" style="margin-top: 10px;">
+                            <small>Pobieranie danych z Alma API...</small>
+                        </div>
+
                     </mat-card-content>
                 </mat-card>
 
-                <!-- Trzecia karta: Podgląd i eksport -->
+                <!-- Trzecia karta: Podgląd i eksport (POJAWIA SIĘ TYLKO PO WYGENEROWANIU) -->
                 <mat-card *ngIf="previewContent">
                     <mat-card-header>
                         <mat-card-title>Podgląd Pliku TXT</mat-card-title>
                     </mat-card-header>
                     <mat-card-content>
-                        <mat-form-field appearance="outline" style="width: 100%;">
+                        <!-- Usunięto appearance="outline" z mat-form-field, bo jest domyślnie w module -->
+                        <mat-form-field style="width: 100%;"> 
                             <mat-label>Zawartość pliku TXT (ISBN i Quantity)</mat-label>
                             <textarea matInput rows="10" [value]="previewContent" readonly #exportContent></textarea>
                         </mat-form-field>
@@ -79,4 +89,8 @@
             </div>
         </ng-template>
     </div>
+</div>
+
+<div class="loading-shade" *ngIf="loading">
+  <mat-spinner diameter="50"></mat-spinner>
 </div>
