@@ -18,30 +18,9 @@
         <!-- SZABLON WIDOCZNY PO OTRZYMANIU ENCJ -->
         <ng-template #entitylist>
             <div class="cloudapp-body">
-                <!-- Pierwsza karta: Wybór encji (generowany przez eca-select-entities) -->
-                <mat-card>
-                    <mat-card-header>
-                        <mat-card-title>
-                            Wybór linii zamówienia ({{ selectedEntities.length }}/{{ visibleEntities.length }})
-                        </mat-card-title>
-                    </mat-card-header>
-                    <mat-card-content>
-                        
-                        <div class="eca-actions" style="margin-bottom: 15px;">
-                            <!-- Przycisk do czyszczenia wyboru -->
-                            <button mat-flat-button color="secondary" (click)="clearSelection()" [disabled]="selectedEntities.length === 0">Wyczyść wybór</button>
-                        </div>
 
-                        <!-- KLUCZOWY KOMPONENT Z eca-components -->
-                        <eca-select-entities #selectEntities
-                            [(selected)]="selectedEntities" >
-                        </eca-select-entities>
-
-                    </mat-card-content>
-                </mat-card>
-                
-                <!-- Druga karta: PRZYCISK GENERUJĄCY (WIDOCZNA ZAWSZE, gdy są encje) -->
-                <mat-card *ngIf="visibleEntities.length > 0"> <!-- ZMIENIONY WARUNEK: visibleEntities.length > 0 -->
+                <!-- DRUGA KARTA: PRZYCISK GENERUJĄCY / OPCJE EKSPORTU (TERAZ NA GÓRZE) -->
+                <mat-card *ngIf="visibleEntities.length > 0">
                     <mat-card-header>
                         <mat-card-title>Opcje eksportu</mat-card-title>
                     </mat-card-header>
@@ -61,13 +40,12 @@
                     </mat-card-content>
                 </mat-card>
 
-                <!-- Trzecia karta: Podgląd i eksport (POJAWIA SIĘ TYLKO PO WYGENEROWANIU) -->
+                <!-- TRZECIA KARTA: Podgląd i eksport (POJAWIA SIĘ TYLKO PO WYGENEROWANIU) -->
                 <mat-card *ngIf="previewContent">
                     <mat-card-header>
                         <mat-card-title>Podgląd Pliku TXT</mat-card-title>
                     </mat-card-header>
                     <mat-card-content>
-                        <!-- Usunięto appearance="outline" z mat-form-field, bo jest domyślnie w module -->
                         <mat-form-field style="width: 100%;"> 
                             <mat-label>Zawartość pliku TXT (ISBN i Quantity)</mat-label>
                             <textarea matInput rows="10" [value]="previewContent" readonly #exportContent></textarea>
@@ -83,6 +61,28 @@
                                 <mat-icon>save_alt</mat-icon> Pobierz plik TXT
                             </button>
                         </div>
+                    </mat-card-content>
+                </mat-card>
+                
+                <!-- PIERWSZA KARTA: Wybór encji (generowany przez eca-select-entities) -->
+                <mat-card>
+                    <mat-card-header>
+                        <mat-card-title>
+                            Wybór linii zamówienia ({{ selectedEntities.length }}/{{ visibleEntities.length }})
+                        </mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content>
+                        
+                        <div class="eca-actions" style="margin-bottom: 15px;">
+                            <!-- Przycisk do czyszczenia wyboru -->
+                            <button mat-flat-button color="secondary" (click)="clearSelection()" [disabled]="selectedEntities.length === 0">Wyczyść wybór</button>
+                        </div>
+
+                        <!-- KLUCZOWY KOMPONENT Z eca-components -->
+                        <eca-select-entities #selectEntities
+                            [(selected)]="selectedEntities" >
+                        </eca-select-entities>
+
                     </mat-card-content>
                 </mat-card>
 
