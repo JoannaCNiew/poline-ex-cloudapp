@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, ElementRef } from '@angular/core'; // DODANO ElementRef
 import { HttpClient } from '@angular/common/http';
 import {
   AlertService,
@@ -11,7 +11,7 @@ import {
 import { TranslateService } from '@ngx-translate/core';
 import { Observable, forkJoin } from 'rxjs';
 import { finalize, tap, map } from 'rxjs/operators';
-import { SelectEntitiesComponent } from '@exlibris/eca-components'; // Import dla ViewChild
+import { SelectEntitiesComponent } from '@exlibris/eca-components'; 
 
 // Interfejs dla danych eksportu (ISBN, Quantity)
 export interface PoExportData {
@@ -26,8 +26,9 @@ export interface PoExportData {
 })
 export class MainComponent implements OnInit, OnDestroy {
 
-  // ViewChild dla komponentu ECA, aby móc wywołać metodę clear()
   @ViewChild('selectEntities') selectEntities!: SelectEntitiesComponent; 
+  // KLUCZOWA ZMIANA: Dodajemy @ViewChild dla #exportTextArea
+  @ViewChild('exportTextArea') exportTextAreaRef!: ElementRef<HTMLTextAreaElement>; 
 
   loading = false;
   
@@ -63,8 +64,6 @@ export class MainComponent implements OnInit, OnDestroy {
       tap(entities => {
         this.loading = false;
         
-        // W kontekście listy PO Line, entities$ zwraca listę widocznych encji.
-        // Komponent ECA sam zajmuje się powiązaniem, ale my używamy tej tablicy do licznika.
         this.visibleEntities = entities || []; 
         
         // Resetujemy stan po zmianie kontekstu
@@ -81,23 +80,17 @@ export class MainComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void { }
 
-  /** Metoda aktualizująca widoczną liczbę encji (wywoływana przez (count) z ECA) */
-  updateVisibleCount(count: number) {
-    // Ponieważ ECA-Select-Entities nie jest powiązany z visibleEntities w HTML, 
-    // używamy tej metody do synchronizacji licznika.
-    // UWAGA: Tracimy tutaj listę encji, ale zyskujemy działający interfejs i licznik.
-    this.visibleEntities.length = count; 
-  }
-  
   /** Metoda czyszcząca stan aplikacji: czyści wybór. */
   clearSelection() {
-    // Wywołuje metodę clear() na komponencie ECA (przez ViewChild)
     this.selectEntities.clear(); 
+    this.previewContent = null; 
   }
   
-  // --- LOGIKA EKSPORTU (PRZENIESIONA) ---
+  // --- LOGIKA EKSPORTU ---
 
-  /** Generuje podgląd eksportu: pobiera dane, przetwarza i zapisuje do previewContent. */
+  /**
+   * Główna metoda wywoływana po kliknięciu "Generuj podgląd eksportu"
+   */
   onGenerateExport() {
     this.loading = true;
 
@@ -107,39 +100,58 @@ export class MainComponent implements OnInit, OnDestroy {
       return;
     }
 
+    // Mapowanie wybranych encji na zapytania API do pobrania pełnych danych
     const requests = this.selectedEntities.map(entity => 
-      this.restService.call({ url: entity.link, method: HttpMethod.GET })
+        this.restService.call({ url: entity.link, method: HttpMethod.GET })
     );
 
+    // Łączenie zapytań i oczekiwanie na wszystkie odpowiedzi
     forkJoin(requests)
       .pipe(
-        finalize(() => this.loading = false),
-        map((responses: any[]) => this.generateFileContent(responses))
+        finalize(() => {
+            this.loading = false;
+        }),
+        map((responses: any[]) => {
+            // Sprawdzenie, czy API zwróciło błędy w odpowiedzi
+            if (responses.some(r => r && r.error)) {
+                // Rzucamy błąd, który zostanie przechwycony przez blok error
+                throw new Error('Jedno lub więcej zapytań API zwróciło błąd.');
+            }
+            return this.generateFileContent(responses);
+        })
       )
       .subscribe({
         next: (fileContent: string) => {
-          this.previewContent = fileContent;
+          this.previewContent = fileContent; // <--- USTAWIENIE PODGLĄDU
           this.alert.success(this.translate.instant('App.ExportSuccess', 
             { count: this.selectedEntities.length }
           ));
         },
         error: (err: any) => {
-          this.alert.error(this.translate.instant('App.ExportError') + ': ' + err.message);
+          this.alert.error(this.translate.instant('App.ExportError') + ': ' + (err.message || 'Nieznany błąd API'));
         }
       });
   }
 
-  /** Generuje zawartość pliku TXT na podstawie danych z API. */
+  /** Generuje TXT file content based on API data. */
   private generateFileContent(responses: any[]): string {
     const headers = this.exportFields.map(field => field.label).join('\t');
     let fileContent = `# Eksport PO Line\n${headers}\n`; 
 
     responses.forEach((poLine: any) => {
+      
+      // Jeżeli encja nie ma kluczowych danych, rzucamy pusty wiersz
+      if (!poLine || !poLine.resource_metadata) {
+          console.warn('WARN: Encja PO Line nie zawiera resource_metadata. Pomijanie wiersza.');
+          return;
+      }
+      
       const row = this.exportFields.map(field => {
         switch (field.name) {
           case 'isbn':
             return poLine.resource_metadata?.isbn || '';
           case 'quantity':
+            // Sumowanie quantity ze wszystkich lokalizacji
             return (poLine.location || []).reduce((sum: number, loc: any) => sum + loc.quantity, 0) || 0;
           default:
             return '';
@@ -151,24 +163,29 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   /** Kopiuje zawartość podglądu do schowka. */
-  copyToClipboard(textArea: HTMLTextAreaElement) {
+  // KLUCZOWA ZMIANA: Metoda nie przyjmuje już argumentu z HTML, tylko odwołuje się do ViewChild
+  copyToClipboard() {
     if (!this.previewContent) {
       this.alert.error(this.translate.instant('App.NoContentToCopy'));
       return;
     }
     
+    // Używamy referencji z ViewChild (ElementRef)
+    const textArea = this.exportTextAreaRef.nativeElement;
+
     textArea.select();
     this.window.document.execCommand('copy');
     this.alert.success(this.translate.instant('App.CopySuccess'));
   }
   
-  /** Uruchamia pobieranie pliku TXT. */
+  /** Initiates TXT file download. */
   downloadFile() {
     if (!this.previewContent) {
       this.alert.error(this.translate.instant('App.NoContentToDownload'));
       return;
     }
 
+    // Pozostała logika bez zmian
     const blob = new Blob([this.previewContent], { type: 'text/plain;charset=utf-8' });
     const url = URL.createObjectURL(blob);
 

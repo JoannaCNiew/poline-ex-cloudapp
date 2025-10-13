@@ -4,79 +4,106 @@
     <mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
 
     <div class="main-content">
-        <!-- ZMIANA: Widok jest aktywowany, gdy lista encji jest niepusta -->
+        <!-- Komponent będzie widoczny, jeśli są widoczne encje -->
         <ng-container *ngIf="visibleEntities.length > 0; then entitylist; else noentities"></ng-container>
 
         <!-- Szablon dla braku encji -->
         <ng-template #noentities>
             <div class="cloudapp-body">
-                <h1>Witaj w CloudApp do Eksportu PO Line</h1>
-                <p>Aby rozpocząć, przejdź do listy zamówień (PO Line List) w Almie. Ta aplikacja automatycznie wyświetli widoczne tam pozycje, które możesz zaznaczyć i wyeksportować.</p>
+                <h1>Welcome to PO Line Export Cloud App</h1>
+                <p>To begin, navigate to the Purchase Order Line List in Alma. This application will automatically display the visible PO Lines, which you can select and export.</p>
             </div>
         </ng-template>
 
         <!-- SZABLON WIDOCZNY PO OTRZYMANIU ENCJ -->
         <ng-template #entitylist>
             <div class="cloudapp-body">
-                <!-- Pierwsza karta: Wybór encji (TERAZ UŻYWAMY ECA-SELECT-ENTITIES) -->
+
+                <!-- DRUGA KARTA: PRZYCISK GENERUJĄCY / OPCJE EKSPORTU (TERAZ NA GÓRZE) -->
+                <mat-card *ngIf="visibleEntities.length > 0">
+                    <mat-card-header>
+                        <!-- ZMIENIONY ROZMIAR CZCIONKI -->
+                        <mat-card-title style="font-size: 18px;">Export Options</mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <p *ngIf="selectedEntities.length === 0 && !previewContent">Select PO Lines below to unlock file generation.</p>
+                        <p *ngIf="selectedEntities.length > 0 && !previewContent">Selected <strong>{{ selectedEntities.length }}</strong> lines. Click below to fetch details and generate the file.</p>
+                        
+                        <!-- WIDOK, GDY PODGLĄD JEST JUŻ GENEROWANY -->
+                        <p *ngIf="previewContent">Preview successfully generated. Choose an action below:</p>
+
+                        <!-- Przyciski akcji: Zmienione style, aby wymusić pionowy układ -->
+                        <div class="export-actions" style="display: flex; flex-direction: column; align-items: flex-start; margin-top: 10px;">
+
+                            <!-- 1. PRZYCISK GENERUJĄCY (Wymaga zaznaczenia) -->
+                            <button mat-raised-button color="primary" (click)="onGenerateExport()" [disabled]="loading || selectedEntities.length === 0">
+                                <mat-icon>cloud_download</mat-icon> Generate Export Preview
+                            </button>
+                            
+                            <!-- 2. PRZYCISK KOPIUJ (Wymaga wygenerowania podglądu) -->
+                            <button mat-raised-button color="accent" 
+                                (click)="copyToClipboard()" 
+                                [disabled]="!previewContent || loading" 
+                                style="margin-top: 10px;">
+                                <mat-icon>content_copy</mat-icon> Copy to Clipboard
+                            </button>
+
+                            <!-- 3. PRZYCISK POBIERZ (Wymaga wygenerowania podglądu) -->
+                            <button mat-raised-button color="primary" 
+                                (click)="downloadFile()" 
+                                [disabled]="!previewContent || loading" 
+                                style="margin-top: 10px;">
+                                <mat-icon>save_alt</mat-icon> Download TXT File
+                            </button>
+                        </div>
+                        
+                        <div *ngIf="loading" style="margin-top: 10px;">
+                            <small>Fetching data from Alma API...</small>
+                        </div>
+
+                    </mat-card-content>
+                </mat-card>
+
+                <!-- TRZECIA KARTA: Podgląd (TERAZ WYŚWIETLA TYLKO PODGLĄD) -->
+                <mat-card *ngIf="previewContent">
+                    <mat-card-header>
+                        <!-- ZMIENIONY ROZMIAR CZCIONKI -->
+                        <mat-card-title style="font-size: 18px;">TXT File Preview</mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <mat-form-field style="width: 100%;"> 
+                            <mat-label>TXT File Content (ISBN and Quantity)</mat-label>
+                            <!-- Zmieniamy nazwę referencji na #exportTextArea i DEFINIUJEMY ją tutaj dla ViewChild -->
+                            <textarea matInput rows="10" [value]="previewContent" readonly #exportTextArea></textarea>
+                        </mat-form-field>
+                    </mat-card-content>
+                </mat-card>
+                
+                <!-- PIERWSZA KARTA: Wybór encji (generowany przez eca-select-entities) -->
                 <mat-card>
                     <mat-card-header>
-                        <mat-card-title>
-                            Wybór linii zamówienia ({{ selectedEntities.length }}/{{ visibleEntities.length }})
+                        <!-- ZMIENIONY ROZMIAR CZCIONKI -->
+                        <mat-card-title style="font-size: 18px;">
+                            Select PO Lines ({{ selectedEntities.length }}/{{ visibleEntities.length }})
                         </mat-card-title>
                     </mat-card-header>
                     <mat-card-content>
                         
-                        <div class="eca-actions" style="margin-bottom: 15px;">
-                            <!-- Przycisk do czyszczenia wyboru (metoda musi być w komponencie TS) -->
-                            <!-- Uwaga: clear() musi być wywoływane w TS komponentu, jeśli chcemy działać na this.selectedEntities -->
-                            <button mat-flat-button color="secondary" (click)="clearSelection()" [disabled]="selectedEntities.length === 0">Wyczyść wybór</button>
-                        </div>
-
+                        <!-- USUNIĘTO OSOBNY PRZYCISK WYCZYŚCIĆ WYBÓR -->
+                        
                         <!-- KLUCZOWY KOMPONENT Z eca-components -->
                         <eca-select-entities #selectEntities
-                            [(selected)]="selectedEntities"       
-                            (count)="updateVisibleCount($event)"> <!-- Używamy count do zliczenia wszystkich widocznych encji -->
+                            [(selected)]="selectedEntities" >
                         </eca-select-entities>
 
-                    </mat-card-content>
-                </mat-card>
-                
-                <!-- Druga karta: Przycisk GENERUJĄCY (POJAWIA SIĘ PO ZAZNACZENIU) -->
-                <mat-card *ngIf="selectedEntities.length > 0 && !previewContent">
-                    <mat-card-content>
-                        <p>Wybrano <strong>{{ selectedEntities.length }}</strong> linii zamówienia do przetworzenia.</p>
-                        <button mat-raised-button color="primary" (click)="onGenerateExport()" [disabled]="loading">
-                            <mat-icon>cloud_download</mat-icon> Generuj podgląd eksportu
-                        </button>
-                    </mat-card-content>
-                </mat-card>
-
-                <!-- Trzecia karta: Podgląd i eksport -->
-                <mat-card *ngIf="previewContent">
-                    <mat-card-header>
-                        <mat-card-title>Podgląd Pliku TXT</mat-card-title>
-                    </mat-card-header>
-                    <mat-card-content>
-                        <mat-form-field appearance="outline" style="width: 100%;">
-                            <mat-label>Zawartość pliku TXT (ISBN i Quantity)</mat-label>
-                            <textarea matInput rows="10" [value]="previewContent" readonly #exportContent></textarea>
-                        </mat-form-field>
-
-                        <div class="export-actions">
-                            <!-- Opcja Kopiowania -->
-                            <button mat-raised-button color="accent" (click)="copyToClipboard(exportContent)">
-                                <mat-icon>content_copy</mat-icon> Kopiuj do schowka
-                            </button>
-                            <!-- Opcja Pobierania -->
-                            <button mat-raised-button color="primary" (click)="downloadFile()">
-                                <mat-icon>save_alt</mat-icon> Pobierz plik TXT
-                            </button>
-                        </div>
                     </mat-card-content>
                 </mat-card>
 
             </div>
         </ng-template>
     </div>
+</div>
+
+<div class="loading-shade" *ngIf="loading">
+  <mat-spinner diameter="50"></mat-spinner>
 </div>

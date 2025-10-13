@@ -18,7 +18,7 @@ import { AppComponent } from './app.component';
 import { MainComponent } from './main/main.component';
 import { TopmenuComponent } from './topmenu/topmenu.component';
 import { SettingsComponent } from './settings/settings.component'; 
-import { MultiSelectComponent } from './multi-select/multi-select.component'; // <--- DODANY IMPORT
+import { MultiSelectComponent } from './multi-select/multi-select.component'; 
 
 @NgModule({
     declarations: [
@@ -26,7 +26,7 @@ import { MultiSelectComponent } from './multi-select/multi-select.component'; //
         MainComponent,
         TopmenuComponent,
         SettingsComponent,
-        MultiSelectComponent // <--- DODANA DEKLARACJA
+        MultiSelectComponent
     ],
     bootstrap: [AppComponent],
     imports: [
@@ -47,7 +47,8 @@ import { MultiSelectComponent } from './multi-select/multi-select.component'; //
         CloudAppTranslateModule.forRoot()],
     providers: [
         { provide: APP_INITIALIZER, useFactory: () => () => true, deps: [InitService], multi: true },
-        { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'standard' } },
+        // ZMIENIONE: 'standard' na 'outline'
+        { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'outline' } }, 
         provideHttpClient(withInterceptorsFromDi())
     ]
 })
