@@ -1,24 +1,79 @@
-<app-topmenu>
-  <div buttons>
-    <button mat-flat-button type="button" color="primary" (click)="save()" [disabled]="!(form.dirty)">Save</button>
-  </div>
-</app-topmenu>
+<div class="dialog-header-actions">
+  <button mat-flat-button color="default" (click)="onCancel()">
+    <mat-icon>arrow_back</mat-icon> Wróć
+  </button>
+</div>
+
+<h2 class="dialog-title-final" style="font-size: 24px; font-weight: bold;">Ustawienia eksportu</h2>
+
+<!-- NAGŁÓWEK AKCJI PRZENIESIONY NA GÓRĘ -->
+<div class="top-dialog-actions" style="display: flex; justify-content: flex-end; padding: 10px 0;">
+  <button mat-flat-button color="default" (click)="onCancel()">Anuluj</button>
+  <!-- Przycisk Zapisz jest nieaktywny, dopóki formularz nie zostanie zmieniony -->
+  <button mat-flat-button color="primary" (click)="saveSettings()" [disabled]="form.pristine || saving" style="margin-left: 8px;">Zapisz</button>
+</div>
+
 <div class="loading-shade" *ngIf="saving">
   <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
 </div>
-<div *ngIf="form">
-  <form [formGroup]="form">
-    <section class="settings-section">
-      <mat-checkbox labelPosition="before" formControlName="showValue">Show Value:</mat-checkbox>
-    </section>
-    <section class="settings-section">
-      <label class="example-margin">Page Size:</label>
-      <mat-radio-group formControlName="pageSize">
-        <mat-radio-button class="settings-control" [value]="5">5</mat-radio-button>
-        <mat-radio-button class="settings-control" [value]="10">10</mat-radio-button>
-        <mat-radio-button class="settings-control" [value]="20">20</mat-radio-button>
-      </mat-radio-group>
-    </section>
-  </form>
-  <pre *ngIf="form.get('showValue')?.value">{{ form.value | json }}</pre>
-</div>
+
+<!-- Używamy form, tylko gdy jest zainicjowany -->
+<form [formGroup]="form" *ngIf="form">
+
+  <mat-dialog-content class="mat-dialog-content">
+    <div class="columns-config">
+      
+      <p class="instruction-text" style="color: #616161; margin-bottom: 20px;">
+        Zaznacz pola, które chcesz wyeksportować. Kliknij na nazwę pola, aby zmienić nazwę kolumny i przeciągnij, aby zmienić kolejność.
+      </p>
+      
+      <!-- Kontener Drag and Drop -->
+      <div formArrayName="availableFields" cdkDropList (cdkDropListDropped)="drop($event)">
+        
+        <!-- Pętla po wszystkich dostępnych polach -->
+        <div *ngFor="let fieldControl of fieldsFormArray.controls; let i = index" [formGroupName]="i" cdkDrag
+             class="field-row-container mat-elevation-z1"
+             (mouseenter)="hoverIndex = i" 
+             (mouseleave)="hoverIndex = null"
+             [class.expanded]="expandedIndex === i">
+          
+          <div class="field-item">
+            
+            <!-- 1. Uchwyt Drag and Drop - ZAWSZE WIDOCZNY W PIERWSZEJ LINII -->
+            <mat-icon cdkDragHandle 
+                      [style.visibility]="hoverIndex === i ? 'visible' : 'hidden'" 
+                      class="drag-handle-icon">drag_indicator</mat-icon>
+            
+            <!-- 2. Checkbox wyboru pola - PRZESUNIĘTY TUTAJ -->
+            <div class="field-checkbox-cell">
+              <mat-checkbox formControlName="selected"></mat-checkbox>
+            </div>
+
+            <!-- 3. Etykieta pola (kliknięcie rozwija sekcję customLabel) -->
+            <div class="field-label-cell" (click)="toggleExpand(i)">
+              <!-- Wyświetlamy label z FormControlem -->
+              {{ fieldControl.value.label }}
+              <mat-icon class="expand-arrow" [class.expanded]="expandedIndex === i">keyboard_arrow_down</mat-icon>
+            </div>
+            
+          </div>
+
+          <!-- Rozwinięta sekcja do nadpisywania nazwy kolumny (pozostaje rozwijana) -->
+          <div class="expanded-section" *ngIf="expandedIndex === i">
+            <mat-form-field appearance="outline" class="custom-label-input">
+              <mat-label>Nadpisz nazwę kolumny</mat-label>
+              <!-- Używamy label jako placeholder -->
+              <input matInput formControlName="customLabel" [placeholder]="fieldControl.value.label">
+            </mat-form-field>
+            <!-- Pomocnicze info o nazwie pola w API -->
+            <p class="api-name-info">Nazwa pola w API: **{{ fieldControl.value.name }}**</p>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+  
+  <!-- USUNIĘTO: Stary kontener mat-dialog-actions -->
+
+</form>
