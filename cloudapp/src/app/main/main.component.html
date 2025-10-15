@@ -31,28 +31,28 @@
                         <!-- WIDOK, GDY PODGLĄD JEST JUŻ GENEROWANY -->
                         <p *ngIf="previewContent">Podgląd został wygenerowany. Wybierz akcję poniżej:</p>
 
-                        <!-- Przyciski akcji: Zmienione style, aby wymusić pionowy układ -->
-                        <div class="export-actions" style="display: flex; flex-direction: column; align-items: flex-start; margin-top: 10px;">
+                        <!-- Przyciski akcji: Zmienione style, aby wymusić poziomy układ -->
+                        <div class="export-actions" style="display: flex; flex-direction: row; align-items: center; margin-top: 10px;">
 
                             <!-- 1. PRZYCISK GENERUJĄCY (Wymaga zaznaczenia) -->
                             <button mat-raised-button color="primary" (click)="onGenerateExport()" [disabled]="loading || selectedEntities.length === 0">
-                                <mat-icon>cloud_download</mat-icon> Generuj podgląd eksportu
+                                <mat-icon>cloud_download</mat-icon> Preview
                             </button>
                             
                             <!-- 2. PRZYCISK KOPIUJ (Wymaga wygenerowania podglądu) -->
                             <button mat-raised-button color="accent" 
                                 (click)="copyToClipboard()" 
                                 [disabled]="!previewContent || loading" 
-                                style="margin-top: 10px;"> <!-- Usunięto margin-left -->
-                                <mat-icon>content_copy</mat-icon> Kopiuj do schowka
+                                style="margin-left: 10px;"> <!-- Zmieniono na margin-left -->
+                                <mat-icon>content_copy</mat-icon> Copy
                             </button>
 
                             <!-- 3. PRZYCISK POBIERZ (Wymaga wygenerowania podglądu) -->
                             <button mat-raised-button color="primary" 
                                 (click)="downloadFile()" 
                                 [disabled]="!previewContent || loading" 
-                                style="margin-top: 10px;"> <!-- Usunięto margin-left -->
-                                <mat-icon>save_alt</mat-icon> Pobierz plik TXT
+                                style="margin-left: 10px;"> <!-- Zmieniono na margin-left -->
+                                <mat-icon>save_alt</mat-icon> Download
                             </button>
                         </div>
                         
@@ -70,7 +70,6 @@
                     </mat-card-header>
                     <mat-card-content>
                         <mat-form-field style="width: 100%;"> 
-                            <mat-label>Zawartość pliku TXT (ISBN i Quantity)</mat-label>
                             <!-- Zmieniamy nazwę referencji na #exportTextArea i DEFINIUJEMY ją tutaj dla ViewChild -->
                             <textarea matInput rows="10" [value]="previewContent" readonly #exportTextArea></textarea>
                         </mat-form-field>
@@ -86,11 +85,6 @@
                     </mat-card-header>
                     <mat-card-content>
                         
-                        <div class="eca-actions" style="margin-bottom: 15px;">
-                            <!-- Przycisk do czyszczenia wyboru -->
-                            <button mat-flat-button color="secondary" (click)="clearSelection()" [disabled]="selectedEntities.length === 0">Wyczyść wybór</button>
-                        </div>
-
                         <!-- KLUCZOWY KOMPONENT Z eca-components -->
                         <eca-select-entities #selectEntities
                             [(selected)]="selectedEntities" >
@@ -107,3 +101,4 @@
 <div class="loading-shade" *ngIf="loading">
   <mat-spinner diameter="50"></mat-spinner>
 </div>
+
