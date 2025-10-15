@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormArray, FormControl } from '@angular/forms';
-import { CloudAppConfigService, AlertService, CloudAppSettingsService } from '@exlibris/exl-cloudapp-angular-lib'; // DODANO CloudAppSettingsService
+import { CloudAppSettingsService, AlertService } from '@exlibris/exl-cloudapp-angular-lib';
 import { AVAILABLE_FIELDS } from '../main/field-definitions'; 
 import { Router } from '@angular/router';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
@@ -18,19 +18,17 @@ export class SettingsComponent implements OnInit, OnDestroy {
   form!: FormGroup;
   saving = false;
   
-  // Właściwości dla Drag and Drop
   expandedIndex: number | null = null;
   hoverIndex: number | null = null;
   
   private configSubscription: Subscription | undefined;
 
-  // Właściwość pomocnicza do łatwego dostępu do FormArray
   get fieldsFormArray(): FormArray {
     return this.form.get('availableFields') as FormArray;
   }
 
   constructor(
-    private settingsService: CloudAppSettingsService, // <--- ZMIENIONO NA SettingsService
+    private settingsService: CloudAppSettingsService,
     private alert: AlertService,
     public router: Router, 
   ) {
@@ -40,13 +38,13 @@ export class SettingsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    // Wczytywanie konfiguracji z Alma
-    this.configSubscription = this.settingsService.get().subscribe({ // <--- UŻYWAMY settingsService.get()
+    this.configSubscription = this.settingsService.get().subscribe({
       next: (settings: any) => {
+        // Logika wczytywania ustawień: użyj zapisanych lub domyślnych
         this.settings = settings && settings.availableFields ? settings : { availableFields: [...AVAILABLE_FIELDS] };
         this.initForm();
       },
-      error: (err: any) => this.alert.error('Nie udało się wczytać ustawień: ' + err.message)
+      error: (err: any) => this.alert.error('Failed to load settings: ' + err.message)
     });
   }
 
@@ -57,6 +55,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
   }
 
   initForm() {
+    // Wyczyść FormArray przed ponowną inicjalizacją, aby uniknąć duplikatów
+    this.fieldsFormArray.clear();
     this.settings.availableFields.forEach(field => {
       this.fieldsFormArray.push(new FormGroup({
         name: new FormControl(field.name),
@@ -76,26 +76,43 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.form.markAsDirty();
   }
 
+  /**
+   * NOWA METODA: Resetuje ustawienia do wartości domyślnych z pliku field-definitions.ts
+   */
+  resetSettings() {
+    this.alert.info('Settings have been reset. Click Save to apply.', { autoClose: true });
+    
+    // Ustaw bieżące ustawienia na te z pliku domyślnego
+    // Używamy `JSON.parse(JSON.stringify(...))` do stworzenia głębokiej kopii, aby uniknąć problemów z referencją
+    this.settings.availableFields = JSON.parse(JSON.stringify(AVAILABLE_FIELDS));
+    
+    // Zainicjuj formularz na nowo z domyślnymi wartościami
+    this.initForm();
+    
+    // Oznacz formularz jako "brudny", aby przycisk "Save" stał się aktywny
+    this.form.markAsDirty();
+  }
+
   saveSettings() {
     if (this.saving) return; 
     this.saving = true;
     
     const fieldsToSave: FieldConfig[] = this.fieldsFormArray.controls.map(control => control.value);
     
-    this.settingsService.set({ availableFields: fieldsToSave } as AppSettings).subscribe({ // <--- UŻYWAMY settingsService.set()
+    this.settingsService.set({ availableFields: fieldsToSave } as AppSettings).subscribe({
       next: () => {
         this.saving = false;
-        this.alert.success('Ustawienia zostały zapisane!');
+        this.alert.success('Settings saved successfully!');
         this.router.navigate(['/']); 
       },
       error: (err: any) => {
         this.saving = false;
-        this.alert.error('Nie udało się zapisać ustawień: ' + err.message);
+        this.alert.error('Failed to save settings: ' + err.message);
       }
     });
   }
 
   onCancel(): void {
-      this.router.navigate(['/']); 
+    this.router.navigate(['/']); 
   }
 }
