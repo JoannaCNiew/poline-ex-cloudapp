@@ -1,3 +1,11 @@
+<style>
+  /* Ta reguła ukrywa pustą przestrzeń pod polem tekstowym (przeznaczoną na podpowiedzi/błędy),
+     co powinno umieścić uchwyt do zmiany rozmiaru we właściwym rogu. */
+  .preview-card .mat-form-field-subscript-wrapper {
+    display: none;
+  }
+</style>
+
 <app-topmenu></app-topmenu>
 
 <div class="cloudapp-body">
@@ -10,8 +18,8 @@
         <!-- Szablon dla braku encji -->
         <ng-template #noentities>
             <div class="cloudapp-body">
-                <h1>Witaj w CloudApp do Eksportu PO Line</h1>
-                <p>Aby rozpocząć, przejdź do listy zamówień (PO Line List) w Almie. Ta aplikacja automatycznie wyświetli widoczne tam pozycje, które możesz zaznaczyć i wyeksportować.</p>
+                <h1>Welcome to the PO Line Export CloudApp</h1>
+                <p>To begin, go to the PO Line List in Alma. This app will automatically display the visible items, which you can select and export.</p>
             </div>
         </ng-template>
 
@@ -22,14 +30,15 @@
                 <!-- DRUGA KARTA: PRZYCISK GENERUJĄCY / OPCJE EKSPORTU (TERAZ NA GÓRZE) -->
                 <mat-card *ngIf="visibleEntities.length > 0">
                     <mat-card-header>
-                        <mat-card-title style="font-size: 18px;">Opcje eksportu</mat-card-title>
+                        <mat-card-title style="font-size: 17px;">Export Options</mat-card-title>
                     </mat-card-header>
                     <mat-card-content>
-                        <p *ngIf="selectedEntities.length === 0 && !previewContent">Zaznacz linie zamówienia, aby odblokować generowanie pliku.</p>
-                        <p *ngIf="selectedEntities.length > 0 && !previewContent">Wybrano <strong>{{ selectedEntities.length }}</strong> linii. Kliknij poniżej, aby pobrać szczegóły i wygenerować plik.</p>
+                        <p *ngIf="selectedEntities.length === 0 && !previewContent">Select PO lines below to enable preview generation.</p>
+                        <p *ngIf="selectedEntities.length === 1 && !previewContent"><strong>1</strong> line selected. Click on Preview to enable Copy and Download options.</p>
+                        <p *ngIf="selectedEntities.length > 1 && !previewContent"><strong>{{ selectedEntities.length }}</strong> lines selected. Click on Preview to enable Copy and Download options.</p>
                         
                         <!-- WIDOK, GDY PODGLĄD JEST JUŻ GENEROWANY -->
-                        <p *ngIf="previewContent">Podgląd został wygenerowany. Wybierz akcję poniżej:</p>
+                        <p *ngIf="previewContent">The preview has been generated. Select an action below:</p>
 
                         <!-- Przyciski akcji: Zmienione style, aby wymusić poziomy układ -->
                         <div class="export-actions" style="display: flex; flex-direction: row; align-items: center; margin-top: 10px;">
@@ -52,35 +61,33 @@
                                 (click)="downloadFile()" 
                                 [disabled]="!previewContent || loading" 
                                 style="margin-left: 10px;"> <!-- Zmieniono na margin-left -->
-                                <mat-icon>save_alt</mat-icon> Download
+                                <mat-icon>save_alt</mat-icon> Download TXT
                             </button>
                         </div>
                         
                         <div *ngIf="loading" style="margin-top: 10px;">
-                            <small>Pobieranie danych z Alma API...</small>
+                            <small>Fetching data from Alma API...</small>
                         </div>
 
                     </mat-card-content>
                 </mat-card>
 
                 <!-- TRZECIA KARTA: Podgląd (TERAZ WYŚWIETLA TYLKO PODGLĄD) -->
-                <mat-card *ngIf="previewContent">
+                <mat-card *ngIf="previewContent" class="preview-card">
                     <mat-card-header>
-                        <mat-card-title style="font-size: 18px;">Podgląd Pliku TXT</mat-card-title>
+                        <mat-card-title style="font-size: 17px;">TXT File Preview</mat-card-title>
                     </mat-card-header>
                     <mat-card-content>
-                        <mat-form-field style="width: 100%;"> 
-                            <!-- Zmieniamy nazwę referencji na #exportTextArea i DEFINIUJEMY ją tutaj dla ViewChild -->
-                            <textarea matInput rows="10" [value]="previewContent" readonly #exportTextArea></textarea>
-                        </mat-form-field>
+                        <!-- Usunięto opakowanie mat-form-field -->
+                        <textarea matInput rows="5" [value]="previewContent" readonly #exportTextArea class="mat-input-element" style="width: 100%; border: 1px solid #ccc; border-radius: 4px; padding: 5px; box-sizing: border-box; resize: vertical;"></textarea>
                     </mat-card-content>
                 </mat-card>
                 
                 <!-- PIERWSZA KARTA: Wybór encji (generowany przez eca-select-entities) -->
                 <mat-card>
                     <mat-card-header>
-                        <mat-card-title style="font-size: 18px;">
-                            Wybór linii zamówienia ({{ selectedEntities.length }}/{{ visibleEntities.length }})
+                        <mat-card-title style="font-size: 17px;">
+                            Select PO Lines ({{ selectedEntities.length }}/{{ visibleEntities.length }})
                         </mat-card-title>
                     </mat-card-header>
                     <mat-card-content>
