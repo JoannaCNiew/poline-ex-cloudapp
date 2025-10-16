@@ -1,15 +1,15 @@
 import { FieldConfig } from '../models/settings';
 
-// Lista wszystkich dostępnych pól PO Line do eksportu.
+// List of all available PO Line fields for export.
 export const AVAILABLE_FIELDS: FieldConfig[] = [
     { name: 'isbn', label: 'ISBN', selected: true, customLabel: 'ISBN' },
-    { name: 'title', label: 'Tytuł', selected: true, customLabel: 'Tytuł' },
-    { name: 'quantity', label: 'Ilość', selected: true, customLabel: 'Ilość' },
-    { name: 'poNumber', label: 'Numer zamówienia', selected: false, customLabel: 'Numer zamówienia' },
-    { name: 'author', label: 'Autor', selected: false, customLabel: 'Autor' },
-    { name: 'line_number', label: 'Numer linii', selected: false, customLabel: 'Numer linii' },
-    { name: 'owner', label: 'Właściciel', selected: false, customLabel: 'Właściciel' },
-    { name: 'vendor', label: 'Dostawca', selected: false, customLabel: 'Dostawca' },
-    { name: 'price', label: 'Cena', selected: false, customLabel: 'Cena' },
-    { name: 'fund', label: 'Fundusz', selected: false, customLabel: 'Fundusz' },
+    { name: 'title', label: 'Title', selected: true, customLabel: 'Title' },
+    { name: 'quantity', label: 'Quantity', selected: true, customLabel: 'Quantity' },
+    { name: 'poNumber', label: 'PO Number', selected: false, customLabel: 'PO Number' },
+    { name: 'author', label: 'Author', selected: false, customLabel: 'Author' },
+    { name: 'line_number', label: 'Line Number', selected: false, customLabel: 'Line Number' },
+    { name: 'owner', label: 'Owner', selected: false, customLabel: 'Owner' },
+    { name: 'vendor', label: 'Vendor', selected: false, customLabel: 'Vendor' },
+    { name: 'price', label: 'Price', selected: false, customLabel: 'Price' },
+    { name: 'fund', label: 'Fund', selected: false, customLabel: 'Fund' },
 ];

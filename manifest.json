@@ -4,6 +4,11 @@
    "subtitle": "CloudApp",
    "author": "jcn",
    "description": "This application enables downloading txt files with values from PO Lines",
+   "icon": {
+      "type": "font",
+      "value": "fa fa-cart-arrow-down",
+      "background": "#3F51B5"
+   },
    "pages": {
       "settings": "/#/settings"
    }

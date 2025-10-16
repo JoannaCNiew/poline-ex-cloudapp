@@ -1,30 +1,36 @@
 <div class="dialog-header-actions">
   <button mat-flat-button color="default" (click)="onCancel()">
-    <mat-icon>arrow_back</mat-icon> Wróć
+    <mat-icon>arrow_back</mat-icon> Back
   </button>
 </div>
 
-<h2 class="dialog-title-final" style="font-size: 24px; font-weight: bold;">Ustawienia eksportu</h2>
+<h2 class="dialog-title-final" style="font-size: 18px; font-weight: bold;">Settings</h2>
 
-<!-- NAGŁÓWEK AKCJI PRZENIESIONY NA GÓRĘ -->
-<div class="top-dialog-actions" style="display: flex; justify-content: flex-end; padding: 10px 0;">
-  <button mat-flat-button color="default" (click)="onCancel()">Anuluj</button>
-  <!-- Przycisk Zapisz jest nieaktywny, dopóki formularz nie zostanie zmieniony -->
-  <button mat-flat-button color="primary" (click)="saveSettings()" [disabled]="form.pristine || saving" style="margin-left: 8px;">Zapisz</button>
+<!-- Górny pasek akcji -->
+<div class="top-dialog-actions" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0;">
+  <!-- Przycisk resetowania po lewej stronie -->
+  <button mat-stroked-button color="warn" (click)="resetSettings()">
+    Reset Settings
+  </button>
+  
+  <!-- Przyciski Anuluj i Zapisz po prawej stronie -->
+  <div>
+    <button mat-flat-button color="default" (click)="onCancel()">Cancel</button>
+    <button mat-flat-button color="primary" (click)="saveSettings()" [disabled]="form.pristine || saving" style="margin-left: 8px;">Save</button>
+  </div>
 </div>
 
 <div class="loading-shade" *ngIf="saving">
   <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
 </div>
 
-<!-- Używamy form, tylko gdy jest zainicjowany -->
+<!-- Formularz jest używany tylko wtedy, gdy jest zainicjowany -->
 <form [formGroup]="form" *ngIf="form">
-
   <mat-dialog-content class="mat-dialog-content">
     <div class="columns-config">
       
       <p class="instruction-text" style="color: #616161; margin-bottom: 20px;">
-        Zaznacz pola, które chcesz wyeksportować. Kliknij na nazwę pola, aby zmienić nazwę kolumny i przeciągnij, aby zmienić kolejność.
+        Select the fields you want to export. Click on a field name to change the column name, and drag to reorder.
       </p>
       
       <!-- Kontener Drag and Drop -->
@@ -39,41 +45,35 @@
           
           <div class="field-item">
             
-            <!-- 1. Uchwyt Drag and Drop - ZAWSZE WIDOCZNY W PIERWSZEJ LINII -->
+            <!-- 1. Uchwyt Drag and Drop -->
             <mat-icon cdkDragHandle 
                       [style.visibility]="hoverIndex === i ? 'visible' : 'hidden'" 
                       class="drag-handle-icon">drag_indicator</mat-icon>
             
-            <!-- 2. Checkbox wyboru pola - PRZESUNIĘTY TUTAJ -->
+            <!-- 2. Checkbox wyboru pola -->
             <div class="field-checkbox-cell">
               <mat-checkbox formControlName="selected"></mat-checkbox>
             </div>
 
-            <!-- 3. Etykieta pola (kliknięcie rozwija sekcję customLabel) -->
+            <!-- 3. Etykieta pola (rozwija sekcję) -->
             <div class="field-label-cell" (click)="toggleExpand(i)">
-              <!-- Wyświetlamy label z FormControlem -->
               {{ fieldControl.value.label }}
               <mat-icon class="expand-arrow" [class.expanded]="expandedIndex === i">keyboard_arrow_down</mat-icon>
             </div>
             
           </div>
 
-          <!-- Rozwinięta sekcja do nadpisywania nazwy kolumny (pozostaje rozwijana) -->
+          <!-- Rozwijana sekcja do edycji nazwy kolumny -->
           <div class="expanded-section" *ngIf="expandedIndex === i">
             <mat-form-field appearance="outline" class="custom-label-input">
-              <mat-label>Nadpisz nazwę kolumny</mat-label>
-              <!-- Używamy label jako placeholder -->
+              <!-- <mat-label>Override column name</mat-label> -->
               <input matInput formControlName="customLabel" [placeholder]="fieldControl.value.label">
             </mat-form-field>
-            <!-- Pomocnicze info o nazwie pola w API -->
-            <p class="api-name-info">Nazwa pola w API: **{{ fieldControl.value.name }}**</p>
+            <!-- <p class="api-name-info">API field name: **{{ fieldControl.value.name }}**</p> -->
           </div>
           
         </div>
       </div>
     </div>
   </mat-dialog-content>
-  
-  <!-- USUNIĘTO: Stary kontener mat-dialog-actions -->
-
 </form>
