@@ -30,25 +30,19 @@
                 <!-- KARTA OPCJI EKSPORTU -->
                 <mat-card *ngIf="visibleEntities.length > 0">
                     <mat-card-header>
-                        <mat-card-title style="font-size: 17px;">Export Options</mat-card-title>
+                        <!-- Dynamiczny tytuł, który zmienia się w zależności od zaznaczenia -->
+                        <mat-card-title *ngIf="selectedEntities.length === 0" style="font-size: 17px; font-weight: normal;">Select PO lines to enable export options.</mat-card-title>
+                        <mat-card-title *ngIf="selectedEntities.length > 0" style="font-size: 17px; font-weight: normal;">Export Options</mat-card-title>
                     </mat-card-header>
                     <mat-card-content>
-                        <!-- Tekst dla braku zaznaczenia -->
-                        <p *ngIf="selectedEntities.length === 0">Select PO lines below to enable export options.</p>
-
-                        <!-- Tekst dla zaznaczonych pozycji -->
-                        <div *ngIf="selectedEntities.length > 0">
-                            <p *ngIf="selectedEntities.length === 1"><strong>1</strong> line selected.</p>
-                            <p *ngIf="selectedEntities.length > 1"><strong>{{ selectedEntities.length }}</strong> lines selected.</p>
-                            <p>Click below to Preview, Copy, or Download the data.</p>
-                        </div>
+                        <!-- Usunięto tekst informujący o liczbie zaznaczonych linii -->
                         
                         <!-- Przyciski akcji -->
                         <div class="export-actions" style="display: flex; flex-direction: row; align-items: center; margin-top: 10px;">
 
                             <!-- 1. PRZYCISK PODGLĄDU -->
                             <button mat-raised-button color="primary" (click)="onGenerateExport()" [disabled]="loading || selectedEntities.length === 0">
-                                <mat-icon>cloud_download</mat-icon> Preview
+                                <mat-icon>visibility</mat-icon> Preview
                             </button>
                             
                             <!-- 2. PRZYCISK KOPIOWANIA -->
@@ -78,7 +72,7 @@
                 <!-- KARTA PODGLĄDU (tylko gdy jest zawartość) -->
                 <mat-card *ngIf="previewContent" class="preview-card">
                     <mat-card-header>
-                        <mat-card-title style="font-size: 17px;">TXT File Preview</mat-card-title>
+                        <mat-card-title style="font-size: 17px; font-weight: normal;">File Preview</mat-card-title>
                     </mat-card-header>
                     <mat-card-content>
                         <textarea matInput rows="5" [value]="previewContent" readonly #exportTextArea class="mat-input-element" style="width: 100%; border: 1px solid #ccc; border-radius: 4px; padding: 5px; box-sizing: border-box; resize: vertical;"></textarea>
@@ -88,7 +82,7 @@
                 <!-- KARTA WYBORU ENCJI -->
                 <mat-card>
                     <mat-card-header>
-                        <mat-card-title style="font-size: 17px;">
+                        <mat-card-title style="font-size: 17px; font-weight: normal;">
                             Select PO Lines ({{ selectedEntities.length }}/{{ visibleEntities.length }})
                         </mat-card-title>
                     </mat-card-header>
@@ -109,3 +103,4 @@
 <div class="loading-shade" *ngIf="loading">
   <mat-spinner diameter="50"></mat-spinner>
 </div>
+
