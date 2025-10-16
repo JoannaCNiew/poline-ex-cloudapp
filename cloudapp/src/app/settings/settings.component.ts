@@ -15,7 +15,7 @@ import { MatCheckboxChange } from '@angular/material/checkbox';
 })
 export class SettingsComponent implements OnInit, OnDestroy {
 
-  settings: AppSettings = { availableFields: [] };
+  settings: AppSettings = { availableFields: [], customHeader: '# PO Line Export' };
   form!: FormGroup;
   saving = false;
   
@@ -33,12 +33,10 @@ export class SettingsComponent implements OnInit, OnDestroy {
     return this.fieldsFormArray.controls.filter(control => control.value.selected).length;
   }
 
-  // NOWA WŁAŚCIWOŚĆ: Sprawdza, czy wszystkie pola są zaznaczone
   get allFieldsSelected(): boolean {
     return this.fieldsFormArray.length > 0 && this.selectedFieldsCount === this.fieldsFormArray.length;
   }
 
-  // NOWA WŁAŚCIWOŚĆ: Sprawdza, czy zaznaczone są niektóre (ale nie wszystkie) pola
   get someFieldsSelected(): boolean {
     return this.selectedFieldsCount > 0 && !this.allFieldsSelected;
   }
@@ -49,14 +47,20 @@ export class SettingsComponent implements OnInit, OnDestroy {
     public router: Router, 
   ) {
     this.form = new FormGroup({
-      availableFields: new FormArray([])
+      availableFields: new FormArray([]),
+      customHeader: new FormControl('') // DODANO FormControl dla nagłówka
     });
   }
 
   ngOnInit() {
     this.configSubscription = this.settingsService.get().subscribe({
       next: (settings: any) => {
-        this.settings = settings && settings.availableFields ? settings : { availableFields: [...AVAILABLE_FIELDS] };
+        const defaultSettings: AppSettings = { availableFields: [...AVAILABLE_FIELDS], customHeader: '# PO Line Export' };
+        this.settings = settings && settings.availableFields ? settings : defaultSettings;
+        // Upewnij się, że customHeader istnieje, nawet jeśli wczytano stare ustawienia
+        if (!this.settings.customHeader) {
+          this.settings.customHeader = defaultSettings.customHeader;
+        }
         this.initForm();
       },
       error: (err: any) => this.alert.error('Failed to load settings: ' + err.message)
@@ -65,7 +69,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     if (this.configSubscription) {
-        this.configSubscription.unsubscribe();
+      this.configSubscription.unsubscribe();
     }
   }
 
@@ -79,6 +83,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
         customLabel: new FormControl(field.customLabel)
       }));
     });
+    // Ustawienie wartości dla nagłówka
+    this.form.patchValue({ customHeader: this.settings.customHeader });
   }
   
   toggleExpand(index: number) {
@@ -90,7 +96,6 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.form.markAsDirty();
   }
 
-  // NOWA METODA: Zastępuje selectAll() i unselectAll()
   toggleSelectAll(event: MatCheckboxChange) {
     this.fieldsFormArray.controls.forEach(control => {
       control.get('selected')?.setValue(event.checked);
@@ -100,7 +105,11 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   resetSettings() {
     this.alert.info('Settings have been reset. Click Save to apply.', { autoClose: true });
-    this.settings.availableFields = JSON.parse(JSON.stringify(AVAILABLE_FIELDS));
+    const defaultSettings: AppSettings = { 
+      availableFields: JSON.parse(JSON.stringify(AVAILABLE_FIELDS)), 
+      customHeader: '# PO Line Export' 
+    };
+    this.settings = defaultSettings;
     this.initForm();
     this.form.markAsDirty();
   }
@@ -109,9 +118,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
     if (this.saving) return; 
     this.saving = true;
     
-    const fieldsToSave: FieldConfig[] = this.fieldsFormArray.controls.map(control => control.value);
-    
-    this.settingsService.set({ availableFields: fieldsToSave } as AppSettings).subscribe({
+    // Zapisujemy cały obiekt formularza, który zawiera `availableFields` i `customHeader`
+    this.settingsService.set(this.form.value).subscribe({
       next: () => {
         this.saving = false;
         this.alert.success('Settings saved successfully!');
@@ -128,4 +136,3 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.router.navigate(['/']); 
   }
 }
-

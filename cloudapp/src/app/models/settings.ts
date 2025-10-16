@@ -1,20 +1,21 @@
-import { AVAILABLE_FIELDS } from '../main/field-definitions'; // <-- KLUCZOWY BRAKUJĄCY IMPORT
+import { AVAILABLE_FIELDS } from '../main/field-definitions';
 
 // Definicja pojedynczego pola w ustawieniach
 export interface FieldConfig {
-    name: string; // Klucz do mapowania danych z API (np. 'isbn')
-    label: string; // Pełna nazwa pola (do wyświetlenia w ustawieniach)
-    selected: boolean; // Czy pole jest wybrane do eksportu
-    customLabel: string; // Nazwa kolumny, którą nadał użytkownik
+    name: string;
+    label: string;
+    selected: boolean;
+    customLabel: string;
 }
 
 // Główny obiekt zapisywany w CloudAppSettings
 export interface AppSettings {
     availableFields: FieldConfig[];
+    customHeader: string; // NOWA WŁAŚCIWOŚĆ: Nagłówek pliku
 }
 
-// Klasa do inicjalizacji (teraz działa poprawnie)
+// Klasa do inicjalizacji z wartościami domyślnymi
 export class Settings implements AppSettings {
-    // Linia 16 jest teraz poprawna dzięki importowi
     availableFields: FieldConfig[] = [...AVAILABLE_FIELDS];
+    customHeader: string = '# PO Line Export'; // Domyślna wartość nagłówka
 }
