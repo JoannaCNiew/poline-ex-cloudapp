@@ -4,13 +4,13 @@
   </button>
 </div>
 
-<h2 class="dialog-title-final" style="font-size: 24px; font-weight: bold;">Settings</h2>
+<h2 class="dialog-title-final" style="font-size: 18px; font-weight: bold;">Settings</h2>
 
 <!-- Górny pasek akcji -->
 <div class="top-dialog-actions" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0;">
   <!-- Przycisk resetowania po lewej stronie -->
   <button mat-stroked-button color="warn" (click)="resetSettings()">
-    Reset to Defaults
+    Reset Settings
   </button>
   
   <!-- Przyciski Anuluj i Zapisz po prawej stronie -->
@@ -66,10 +66,10 @@
           <!-- Rozwijana sekcja do edycji nazwy kolumny -->
           <div class="expanded-section" *ngIf="expandedIndex === i">
             <mat-form-field appearance="outline" class="custom-label-input">
-              <mat-label>Override column name</mat-label>
+              <!-- <mat-label>Override column name</mat-label> -->
               <input matInput formControlName="customLabel" [placeholder]="fieldControl.value.label">
             </mat-form-field>
-            <p class="api-name-info">API field name: **{{ fieldControl.value.name }}**</p>
+            <!-- <p class="api-name-info">API field name: **{{ fieldControl.value.name }}**</p> -->
           </div>
           
         </div>
