@@ -32,6 +32,17 @@
       <p class="instruction-text" style="color: #616161; margin-bottom: 20px;">
         Select the fields you want to export. Click on a field name to change the column name, and drag to reorder.
       </p>
+
+      <!-- ZMIENIONA SEKCJA: Ujednolicony checkbox "Zaznacz/Odznacz wszystko" -->
+      <div class="column-actions" style="margin-bottom: 15px; border-bottom: 1px solid #e0e0e0; padding-bottom: 15px;">
+        <mat-checkbox 
+          color="primary"
+          [checked]="allFieldsSelected"
+          [indeterminate]="someFieldsSelected"
+          (change)="toggleSelectAll($event)">
+          Check/Uncheck All ({{ selectedFieldsCount }}/{{ fieldsFormArray.length }})
+        </mat-checkbox>
+      </div>
       
       <!-- Kontener Drag and Drop -->
       <div formArrayName="availableFields" cdkDropList (cdkDropListDropped)="drop($event)">
@@ -56,7 +67,7 @@
             </div>
 
             <!-- 3. Etykieta pola (rozwija sekcję) -->
-            <div class="field-label-cell" (click)="toggleExpand(i)">
+            <div class="field-label-cell" (click)="toggleExpand(i)" style="font-size: 14px;">
               {{ fieldControl.value.label }}
               <mat-icon class="expand-arrow" [class.expanded]="expandedIndex === i">keyboard_arrow_down</mat-icon>
             </div>
@@ -77,3 +88,4 @@
     </div>
   </mat-dialog-content>
 </form>
+

@@ -6,6 +6,7 @@ import { Router } from '@angular/router';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { AppSettings, FieldConfig } from '../models/settings';
 import { Subscription } from 'rxjs'; 
+import { MatCheckboxChange } from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-settings',
@@ -27,6 +28,21 @@ export class SettingsComponent implements OnInit, OnDestroy {
     return this.form.get('availableFields') as FormArray;
   }
 
+  get selectedFieldsCount(): number {
+    if (!this.form) return 0;
+    return this.fieldsFormArray.controls.filter(control => control.value.selected).length;
+  }
+
+  // NOWA WŁAŚCIWOŚĆ: Sprawdza, czy wszystkie pola są zaznaczone
+  get allFieldsSelected(): boolean {
+    return this.fieldsFormArray.length > 0 && this.selectedFieldsCount === this.fieldsFormArray.length;
+  }
+
+  // NOWA WŁAŚCIWOŚĆ: Sprawdza, czy zaznaczone są niektóre (ale nie wszystkie) pola
+  get someFieldsSelected(): boolean {
+    return this.selectedFieldsCount > 0 && !this.allFieldsSelected;
+  }
+
   constructor(
     private settingsService: CloudAppSettingsService,
     private alert: AlertService,
@@ -40,7 +56,6 @@ export class SettingsComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.configSubscription = this.settingsService.get().subscribe({
       next: (settings: any) => {
-        // Logika wczytywania ustawień: użyj zapisanych lub domyślnych
         this.settings = settings && settings.availableFields ? settings : { availableFields: [...AVAILABLE_FIELDS] };
         this.initForm();
       },
@@ -55,7 +70,6 @@ export class SettingsComponent implements OnInit, OnDestroy {
   }
 
   initForm() {
-    // Wyczyść FormArray przed ponowną inicjalizacją, aby uniknąć duplikatów
     this.fieldsFormArray.clear();
     this.settings.availableFields.forEach(field => {
       this.fieldsFormArray.push(new FormGroup({
@@ -76,20 +90,18 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.form.markAsDirty();
   }
 
-  /**
-   * NOWA METODA: Resetuje ustawienia do wartości domyślnych z pliku field-definitions.ts
-   */
+  // NOWA METODA: Zastępuje selectAll() i unselectAll()
+  toggleSelectAll(event: MatCheckboxChange) {
+    this.fieldsFormArray.controls.forEach(control => {
+      control.get('selected')?.setValue(event.checked);
+    });
+    this.form.markAsDirty();
+  }
+
   resetSettings() {
     this.alert.info('Settings have been reset. Click Save to apply.', { autoClose: true });
-    
-    // Ustaw bieżące ustawienia na te z pliku domyślnego
-    // Używamy `JSON.parse(JSON.stringify(...))` do stworzenia głębokiej kopii, aby uniknąć problemów z referencją
     this.settings.availableFields = JSON.parse(JSON.stringify(AVAILABLE_FIELDS));
-    
-    // Zainicjuj formularz na nowo z domyślnymi wartościami
     this.initForm();
-    
-    // Oznacz formularz jako "brudny", aby przycisk "Save" stał się aktywny
     this.form.markAsDirty();
   }
 
@@ -116,3 +128,4 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.router.navigate(['/']); 
   }
 }
+
