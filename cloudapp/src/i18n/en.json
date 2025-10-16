@@ -1,3 +1,10 @@
 {
-    "translatedExampleText": "An example of a translated label"
+  "App": {
+    "ExportSuccess": "Preview generated successfully.",
+    "CopySuccess": "Content copied to clipboard.",
+    "DownloadSuccess": "File download started.",
+    "ExportError": "An error occurred during export",
+    "NoContentToCopy": "There is no content to copy.",
+    "NoContentToDownload": "There is no content to download."
+  }
 }

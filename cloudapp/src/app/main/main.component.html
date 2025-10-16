@@ -27,41 +27,38 @@
         <ng-template #entitylist>
             <div class="cloudapp-body">
 
-                <!-- DRUGA KARTA: PRZYCISK GENERUJĄCY / OPCJE EKSPORTU (TERAZ NA GÓRZE) -->
+                <!-- KARTA OPCJI EKSPORTU -->
                 <mat-card *ngIf="visibleEntities.length > 0">
                     <mat-card-header>
-                        <mat-card-title style="font-size: 17px;">Export Options</mat-card-title>
+                        <!-- Dynamiczny tytuł, który zmienia się w zależności od zaznaczenia -->
+                        <mat-card-title *ngIf="selectedEntities.length === 0" style="font-size: 17px; font-weight: normal;">Select PO lines to enable export options.</mat-card-title>
+                        <mat-card-title *ngIf="selectedEntities.length > 0" style="font-size: 17px; font-weight: normal;">Export Options</mat-card-title>
                     </mat-card-header>
                     <mat-card-content>
-                        <p *ngIf="selectedEntities.length === 0 && !previewContent">Select PO lines below to enable preview generation.</p>
-                        <p *ngIf="selectedEntities.length === 1 && !previewContent"><strong>1</strong> line selected. Click on Preview to enable Copy and Download options.</p>
-                        <p *ngIf="selectedEntities.length > 1 && !previewContent"><strong>{{ selectedEntities.length }}</strong> lines selected. Click on Preview to enable Copy and Download options.</p>
+                        <!-- Usunięto tekst informujący o liczbie zaznaczonych linii -->
                         
-                        <!-- WIDOK, GDY PODGLĄD JEST JUŻ GENEROWANY -->
-                        <p *ngIf="previewContent">The preview has been generated. Select an action below:</p>
-
-                        <!-- Przyciski akcji: Zmienione style, aby wymusić poziomy układ -->
+                        <!-- Przyciski akcji -->
                         <div class="export-actions" style="display: flex; flex-direction: row; align-items: center; margin-top: 10px;">
 
-                            <!-- 1. PRZYCISK GENERUJĄCY (Wymaga zaznaczenia) -->
+                            <!-- 1. PRZYCISK PODGLĄDU -->
                             <button mat-raised-button color="primary" (click)="onGenerateExport()" [disabled]="loading || selectedEntities.length === 0">
-                                <mat-icon>cloud_download</mat-icon> Preview
+                                <mat-icon>visibility</mat-icon> Preview
                             </button>
                             
-                            <!-- 2. PRZYCISK KOPIUJ (Wymaga wygenerowania podglądu) -->
+                            <!-- 2. PRZYCISK KOPIOWANIA -->
                             <button mat-raised-button color="accent" 
                                 (click)="copyToClipboard()" 
-                                [disabled]="!previewContent || loading" 
-                                style="margin-left: 10px;"> <!-- Zmieniono na margin-left -->
+                                [disabled]="loading || selectedEntities.length === 0" 
+                                style="margin-left: 10px;">
                                 <mat-icon>content_copy</mat-icon> Copy
                             </button>
 
-                            <!-- 3. PRZYCISK POBIERZ (Wymaga wygenerowania podglądu) -->
+                            <!-- 3. PRZYCISK POBIERANIA -->
                             <button mat-raised-button color="primary" 
                                 (click)="downloadFile()" 
-                                [disabled]="!previewContent || loading" 
-                                style="margin-left: 10px;"> <!-- Zmieniono na margin-left -->
-                                <mat-icon>save_alt</mat-icon> Download TXT
+                                [disabled]="loading || selectedEntities.length === 0" 
+                                style="margin-left: 10px;">
+                                <mat-icon>save_alt</mat-icon> Download
                             </button>
                         </div>
                         
@@ -72,27 +69,25 @@
                     </mat-card-content>
                 </mat-card>
 
-                <!-- TRZECIA KARTA: Podgląd (TERAZ WYŚWIETLA TYLKO PODGLĄD) -->
+                <!-- KARTA PODGLĄDU (tylko gdy jest zawartość) -->
                 <mat-card *ngIf="previewContent" class="preview-card">
                     <mat-card-header>
-                        <mat-card-title style="font-size: 17px;">TXT File Preview</mat-card-title>
+                        <mat-card-title style="font-size: 17px; font-weight: normal;">File Preview</mat-card-title>
                     </mat-card-header>
                     <mat-card-content>
-                        <!-- Usunięto opakowanie mat-form-field -->
                         <textarea matInput rows="5" [value]="previewContent" readonly #exportTextArea class="mat-input-element" style="width: 100%; border: 1px solid #ccc; border-radius: 4px; padding: 5px; box-sizing: border-box; resize: vertical;"></textarea>
                     </mat-card-content>
                 </mat-card>
                 
-                <!-- PIERWSZA KARTA: Wybór encji (generowany przez eca-select-entities) -->
+                <!-- KARTA WYBORU ENCJI -->
                 <mat-card>
                     <mat-card-header>
-                        <mat-card-title style="font-size: 17px;">
+                        <mat-card-title style="font-size: 17px; font-weight: normal;">
                             Select PO Lines ({{ selectedEntities.length }}/{{ visibleEntities.length }})
                         </mat-card-title>
                     </mat-card-header>
                     <mat-card-content>
                         
-                        <!-- KLUCZOWY KOMPONENT Z eca-components -->
                         <eca-select-entities #selectEntities
                             [(selected)]="selectedEntities" >
                         </eca-select-entities>

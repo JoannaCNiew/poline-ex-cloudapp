@@ -1,23 +1,16 @@
 <div class="title" [class.show-actions]="route.url !== '/'">
-    <div class="eca-actions">
-        <!-- Przycisk Powrót/Home (zostaje) -->
-        <button mat-flat-button color="secondary" [routerLink]="['/']">
+    <!-- Zmieniono styl, aby przyciski były wyrównane do prawej i zgrupowane -->
+    <div class="eca-actions" style="display: flex; justify-content: flex-end; align-items: center; width: 100%;">
+        
+        <!-- Przycisk Home (widoczny tylko na stronie /settings) -->
+        <button mat-flat-button color="secondary" [routerLink]="['/']" *ngIf="route.url === '/settings'">
             <mat-icon>arrow_back</mat-icon>
             Home
         </button>
-        
-        <!-- NOWY PRZYCISK: Test Multi-Select -->
-        <button mat-flat-button color="secondary" *ngIf="route.url !== '/multi-select'" [routerLink]="['/multi-select']">
-            Test Multi-Select
-        </button>
 
-        <!-- Przycisk Settings (zostaje) -->
-        <button mat-flat-button color="secondary" [routerLink]="['/settings']">
-            <mat-icon>settings</mat-icon>
-            Settings
-        </button>
-        
+        <!-- Kontener na przyciski wstrzykiwane został usunięty, przyciski będą się stykać -->
         <ng-content select="[buttons]"></ng-content>
+
     </div>
-    <h1>{{ title }}</h1>
 </div>
+
