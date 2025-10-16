@@ -11,12 +11,13 @@
             Test Multi-Select
         </button>
 
-        <!-- Przycisk Settings (zostaje) -->
-        <button mat-flat-button color="secondary" [routerLink]="['/settings']">
+        <!-- Przycisk Settings (teraz ukryty na stronie ustawień) -->
+        <button mat-flat-button color="secondary" *ngIf="route.url !== '/settings'" [routerLink]="['/settings']">
             <mat-icon>settings</mat-icon>
             Settings
         </button>
         
+        <!-- To jest "slot", w którym pojawi się przycisk "Save" ze strony settings -->
         <ng-content select="[buttons]"></ng-content>
     </div>
     <h1>{{ title }}</h1>

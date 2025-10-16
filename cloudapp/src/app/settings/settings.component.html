@@ -1,24 +1,15 @@
-<div class="dialog-header-actions">
-  <button mat-flat-button color="default" (click)="onCancel()">
-    <mat-icon>arrow_back</mat-icon> Back
-  </button>
-</div>
-
-<h2 class="dialog-title-final" style="font-size: 18px; font-weight: bold;">Settings</h2>
-
-<!-- Górny pasek akcji -->
-<div class="top-dialog-actions" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0;">
-  <!-- Przycisk resetowania po lewej stronie -->
-  <button mat-stroked-button color="warn" (click)="resetSettings()">
-    Reset Settings
-  </button>
-  
-  <!-- Przyciski Anuluj i Zapisz po prawej stronie -->
-  <div>
-    <button mat-flat-button color="default" (click)="onCancel()">Cancel</button>
-    <button mat-flat-button color="primary" (click)="saveSettings()" [disabled]="form.pristine || saving" style="margin-left: 8px;">Save</button>
+<!-- Przycisk "Save" jest teraz "wstrzykiwany" do komponentu app-topmenu -->
+<app-topmenu>
+  <div buttons>
+    <button mat-flat-button color="primary" (click)="saveSettings()" [disabled]="form.pristine || saving">
+        Save
+    </button>
   </div>
-</div>
+</app-topmenu>
+
+<!-- Tytuł strony jest teraz oddzielnie -->
+<h2 class="dialog-title-final" style="font-size: 24px; font-weight: bold; margin-top: 1rem;">Settings</h2>
+
 
 <div class="loading-shade" *ngIf="saving">
   <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
@@ -33,15 +24,20 @@
         Select the fields you want to export. Click on a field name to change the column name, and drag to reorder.
       </p>
 
-      <!-- ZMIENIONA SEKCJA: Ujednolicony checkbox "Zaznacz/Odznacz wszystko" -->
-      <div class="column-actions" style="margin-bottom: 15px; border-bottom: 1px solid #e0e0e0; padding-bottom: 15px;">
+      <!-- Akcje dotyczące listy pól zostały zgrupowane razem -->
+      <div class="column-actions" style="margin-bottom: 15px; border-bottom: 1px solid #e0e0e0; padding-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
         <mat-checkbox 
           color="primary"
           [checked]="allFieldsSelected"
           [indeterminate]="someFieldsSelected"
           (change)="toggleSelectAll($event)">
-          Check/Uncheck All ({{ selectedFieldsCount }}/{{ fieldsFormArray.length }})
+          Check/Uncheck All ({{ selectedFieldsCount }} / {{ fieldsFormArray.length }})
         </mat-checkbox>
+        
+        <!-- Przycisk resetowania jest teraz tutaj -->
+        <button mat-stroked-button color="warn" (click)="resetSettings()">
+          Reset to Defaults
+        </button>
       </div>
       
       <!-- Kontener Drag and Drop -->
@@ -67,7 +63,7 @@
             </div>
 
             <!-- 3. Etykieta pola (rozwija sekcję) -->
-            <div class="field-label-cell" (click)="toggleExpand(i)" style="font-size: 14px;">
+            <div class="field-label-cell" (click)="toggleExpand(i)">
               {{ fieldControl.value.label }}
               <mat-icon class="expand-arrow" [class.expanded]="expandedIndex === i">keyboard_arrow_down</mat-icon>
             </div>
@@ -77,10 +73,10 @@
           <!-- Rozwijana sekcja do edycji nazwy kolumny -->
           <div class="expanded-section" *ngIf="expandedIndex === i">
             <mat-form-field appearance="outline" class="custom-label-input">
-              <!-- <mat-label>Override column name</mat-label> -->
+              <mat-label>Override column name</mat-label>
               <input matInput formControlName="customLabel" [placeholder]="fieldControl.value.label">
             </mat-form-field>
-            <!-- <p class="api-name-info">API field name: **{{ fieldControl.value.name }}**</p> -->
+            <p class="api-name-info">API field name: **{{ fieldControl.value.name }}**</p>
           </div>
           
         </div>
