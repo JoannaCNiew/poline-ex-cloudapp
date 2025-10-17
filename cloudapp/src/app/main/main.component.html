@@ -1,6 +1,4 @@
 <style>
-  /* Ta reguła ukrywa pustą przestrzeń pod polem tekstowym (przeznaczoną na podpowiedzi/błędy),
-     co powinno umieścić uchwyt do zmiany rozmiaru we właściwym rogu. */
   .preview-card .mat-form-field-subscript-wrapper {
     display: none;
   }
@@ -12,10 +10,8 @@
     <mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
 
     <div class="main-content">
-        <!-- Komponent będzie widoczny, jeśli są widoczne encje -->
         <ng-container *ngIf="visibleEntities.length > 0; then entitylist; else noentities"></ng-container>
 
-        <!-- Szablon dla braku encji -->
         <ng-template #noentities>
             <div class="cloudapp-body">
                 <h1>Welcome to the PO Line Export CloudApp</h1>
@@ -23,29 +19,22 @@
             </div>
         </ng-template>
 
-        <!-- SZABLON WIDOCZNY PO OTRZYMANIU ENCJ -->
         <ng-template #entitylist>
             <div class="cloudapp-body">
 
-                <!-- KARTA OPCJI EKSPORTU -->
                 <mat-card *ngIf="visibleEntities.length > 0">
                     <mat-card-header>
-                        <!-- Dynamiczny tytuł, który zmienia się w zależności od zaznaczenia -->
                         <mat-card-title *ngIf="selectedEntities.length === 0" style="font-size: 17px; font-weight: normal;">Select PO lines to enable export options.</mat-card-title>
                         <mat-card-title *ngIf="selectedEntities.length > 0" style="font-size: 17px; font-weight: normal;">Export Options</mat-card-title>
                     </mat-card-header>
                     <mat-card-content>
-                        <!-- Usunięto tekst informujący o liczbie zaznaczonych linii -->
                         
-                        <!-- Przyciski akcji -->
                         <div class="export-actions" style="display: flex; flex-direction: row; align-items: center; margin-top: 10px;">
 
-                            <!-- 1. PRZYCISK PODGLĄDU -->
                             <button mat-raised-button color="primary" (click)="onGenerateExport()" [disabled]="loading || selectedEntities.length === 0">
                                 <mat-icon>visibility</mat-icon> Preview
                             </button>
                             
-                            <!-- 2. PRZYCISK KOPIOWANIA -->
                             <button mat-raised-button color="accent" 
                                 (click)="copyToClipboard()" 
                                 [disabled]="loading || selectedEntities.length === 0" 
@@ -53,7 +42,6 @@
                                 <mat-icon>content_copy</mat-icon> Copy
                             </button>
 
-                            <!-- 3. PRZYCISK POBIERANIA -->
                             <button mat-raised-button color="primary" 
                                 (click)="downloadFile()" 
                                 [disabled]="loading || selectedEntities.length === 0" 
@@ -69,7 +57,6 @@
                     </mat-card-content>
                 </mat-card>
 
-                <!-- KARTA PODGLĄDU (tylko gdy jest zawartość) -->
                 <mat-card *ngIf="previewContent" class="preview-card">
                     <mat-card-header>
                         <mat-card-title style="font-size: 17px; font-weight: normal;">File Preview</mat-card-title>
@@ -79,7 +66,6 @@
                     </mat-card-content>
                 </mat-card>
                 
-                <!-- KARTA WYBORU ENCJI -->
                 <mat-card>
                     <mat-card-header>
                         <mat-card-title style="font-size: 17px; font-weight: normal;">

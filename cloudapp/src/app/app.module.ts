@@ -47,7 +47,6 @@ import { MultiSelectComponent } from './multi-select/multi-select.component';
         CloudAppTranslateModule.forRoot()],
     providers: [
         { provide: APP_INITIALIZER, useFactory: () => () => true, deps: [InitService], multi: true },
-        // ZMIENIONE: 'standard' na 'outline'
         { provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: { appearance: 'outline' } }, 
         provideHttpClient(withInterceptorsFromDi())
     ]
