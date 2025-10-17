@@ -1,6 +1,5 @@
 import { FieldConfig } from '../models/settings';
 
-// List of all available PO Line fields for export.
 export const AVAILABLE_FIELDS: FieldConfig[] = [
     { name: 'isbn', label: 'ISBN', selected: true, customLabel: 'ISBN' },
     { name: 'title', label: 'Title', selected: true, customLabel: 'Title' },

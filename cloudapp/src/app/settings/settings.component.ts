@@ -48,7 +48,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
   ) {
     this.form = new FormGroup({
       availableFields: new FormArray([]),
-      customHeader: new FormControl('') // DODANO FormControl dla nagłówka
+      customHeader: new FormControl('')
     });
   }
 
@@ -57,7 +57,6 @@ export class SettingsComponent implements OnInit, OnDestroy {
       next: (settings: any) => {
         const defaultSettings: AppSettings = { availableFields: [...AVAILABLE_FIELDS], customHeader: '# PO Line Export' };
         this.settings = settings && settings.availableFields ? settings : defaultSettings;
-        // Upewnij się, że customHeader istnieje, nawet jeśli wczytano stare ustawienia
         if (!this.settings.customHeader) {
           this.settings.customHeader = defaultSettings.customHeader;
         }
@@ -83,7 +82,6 @@ export class SettingsComponent implements OnInit, OnDestroy {
         customLabel: new FormControl(field.customLabel)
       }));
     });
-    // Ustawienie wartości dla nagłówka
     this.form.patchValue({ customHeader: this.settings.customHeader });
   }
   
@@ -118,7 +116,6 @@ export class SettingsComponent implements OnInit, OnDestroy {
     if (this.saving) return; 
     this.saving = true;
     
-    // Zapisujemy cały obiekt formularza, który zawiera `availableFields` i `customHeader`
     this.settingsService.set(this.form.value).subscribe({
       next: () => {
         this.saving = false;

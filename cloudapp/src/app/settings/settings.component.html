@@ -1,4 +1,3 @@
-<!-- Przycisk "Save" jest teraz "wstrzykiwany" do komponentu app-topmenu -->
 <app-topmenu>
   <div buttons>
     <button mat-flat-button color="primary" (click)="saveSettings()" [disabled]="form.pristine || saving">
@@ -11,7 +10,6 @@
   <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
 </div>
 
-<!-- Formularz jest używany tylko wtedy, gdy jest zainicjowany -->
 <form [formGroup]="form" *ngIf="form" class="settings-form">
     <h2 class="dialog-title-final" style="font-size: 18px; font-weight: bold;">Settings</h2>
 
@@ -19,7 +17,6 @@
         Select the fields you want to export. Click on a field name to change the column name, and drag to reorder. In the text field below, you can customize the file header.
     </p>
 
-    <!-- NOWE POLE: Niestandardowy nagłówek pliku -->
     <mat-form-field appearance="outline" style="width: 100%; margin-bottom: 20px;">
         <mat-label>Custom File Header</mat-label>
         <textarea matInput formControlName="customHeader" rows="3" placeholder="Enter the text that will appear at the top of the exported file."></textarea>
@@ -28,7 +25,6 @@
     <mat-dialog-content class="mat-dialog-content">
         <div class="columns-config">
             
-            <!-- ZMIENIONO STYL I TREŚĆ PRZYCISKU -->
             <div class="column-actions" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <mat-checkbox 
                     [checked]="allFieldsSelected"
@@ -37,14 +33,12 @@
                     Check/Uncheck All ({{ selectedFieldsCount }}/{{ fieldsFormArray.length }})
                 </mat-checkbox>
                 <button mat-stroked-button color="warn" (click)="resetSettings()">
-                    Reset Settings <!-- ZMIENIONO NAZWĘ -->
+                    Reset Settings 
                 </button>
             </div>
             
-            <!-- Kontener Drag and Drop -->
             <div formArrayName="availableFields" cdkDropList (cdkDropListDropped)="drop($event)">
                 
-                <!-- Pętla po wszystkich dostępnych polach -->
                 <div *ngFor="let fieldControl of fieldsFormArray.controls; let i = index" [formGroupName]="i" cdkDrag
                      class="field-row-container mat-elevation-z1"
                      (mouseenter)="hoverIndex = i" 

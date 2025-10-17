@@ -63,7 +63,6 @@ export class MainComponent implements OnInit, OnDestroy {
     this.settingsSubscription = this.settingsService.get().subscribe((settings: any) => {
       const defaultSettings: AppSettings = { availableFields: AVAILABLE_FIELDS, customHeader: '# PO Line Export' };
       const loadedSettings = settings && settings.availableFields ? settings : defaultSettings;
-      // Upewnij się, że customHeader istnieje, nawet jeśli wczytano stare ustawienia
       if (!loadedSettings.customHeader) {
         loadedSettings.customHeader = defaultSettings.customHeader;
       }
@@ -143,7 +142,6 @@ export class MainComponent implements OnInit, OnDestroy {
 
   private generateFileContent(responses: any[]): string {
     const headers = this.exportFields.map(field => field.customLabel).join('\t');
-    // Użycie niestandardowego nagłówka z ustawień
     const customHeader = this.settings.customHeader ? `${this.settings.customHeader}\n` : '';
     let fileContent = `${customHeader}${headers}\n`;  
 
@@ -158,7 +156,7 @@ export class MainComponent implements OnInit, OnDestroy {
           case 'owner': return poLine.owner?.desc || '';
           case 'vendor': return poLine.vendor?.desc || '';
           case 'price': return (poLine.price?.sum || poLine.price?.amount || '0').toString();
-          case 'fund': return poLine.fund_ledger?.name || ''; // POPRAWKA: poLine zamiast po
+          case 'fund': return poLine.fund_ledger?.name || '';
           case 'quantity': return (poLine.location || []).reduce((sum: number, loc: any) => sum + (loc.quantity || 0), 0);
           default: return '';
         }
