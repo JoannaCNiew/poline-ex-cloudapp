@@ -1,10 +1,66 @@
 {
-  "App": {
-    "ExportSuccess": "Preview generated successfully.",
-    "CopySuccess": "Content copied to clipboard.",
-    "DownloadSuccess": "File download started.",
-    "ExportError": "An error occurred during export",
-    "NoContentToCopy": "There is no content to copy.",
-    "NoContentToDownload": "There is no content to download."
+  "Main": {
+    "NoEntities": {
+      "Title": "Welcome to the PO Line Export CloudApp",
+      "Description": "To begin, go to the PO Line List in Alma. This app will automatically display the visible items, which you can select and export."
+    },
+    "EntityList": {
+      "TitleSelect": "Select PO lines to enable export options.",
+      "TitleOptions": "Export Options",
+      "Buttons": {
+        "Preview": "Preview",
+        "Copy": "Copy",
+        "Download": "Download"
+      },
+      "Loading": "Fetching data from Alma API...",
+      "PreviewTitle": "File Preview",
+      "SelectTitle": "Select PO Lines"
+    },
+    "Alerts": {
+      "SelectOne": "Select at least one PO line to process.",
+      "NoFieldsSelected": "No fields are selected for export. Please check the Settings.",
+      "PreviewSuccess": "Preview generated successfully.",
+      "PreviewError": "Error generating preview: ",
+      "CopySuccess": "Content copied to clipboard.",
+      "CopyError": "Failed to copy content.",
+      "CopyPrepError": "Error preparing content for copy: ",
+      "DownloadSuccess": "File download started.",
+      "DownloadError": "Error preparing file for download: "
+    },
+    "ExportFilename": "po_line_export.txt"
+  },
+  "Settings": {
+    "Buttons": {
+      "Save": "Save",
+      "Reset": "Reset Settings"
+    },
+    "Title": "Settings",
+    "Instruction": "Select the fields you want to export. Click on a field name to change the column name, and drag to reorder. In the text field below, you can customize the file header.",
+    "CustomHeader": {
+      "Label": "Custom File Header",
+      "Placeholder": "Enter the text that will appear at the top of the exported file."
+    },
+    "Fields": {
+      "ToggleAll": "Check/Uncheck All",
+      "CustomizeLabel": "Customize Column Name"
+    },
+    "Alerts": {
+      "LoadError": "Failed to load settings: ",
+      "ResetInfo": "Settings have been reset. Click Save to apply.",
+      "SaveSuccess": "Settings saved successfully!",
+      "SaveError": "Failed to save settings: "
+    }
+  },
+  "Fields": {
+    "ISBN": "ISBN",
+    "Title": "Title",
+    "Quantity": "Quantity",
+    "PONumber": "PO Number",
+    "Author": "Author",
+    "LineNumber": "Line Number",
+    "Owner": "Owner",
+    "Vendor": "Vendor",
+    "Price": "Price",
+    "Fund": "Fund"
   }
 }

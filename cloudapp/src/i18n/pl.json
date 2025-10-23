@@ -1,4 +1,66 @@
 {
-  "SelectEntities.CheckAll": "Zaznacz/Odznacz wszystko",
-  "SelectEntities.Selected": "Wybrano"
+  "Main": {
+    "NoEntities": {
+      "Title": "Witaj w aplikacji PO Line Export",
+      "Description": "Aby rozpocząć, przejdź do Listy linii zamówień w Almie. Ta aplikacja automatycznie wyświetli widoczne pozycje, które możesz wybrać i wyeksportować."
+    },
+    "EntityList": {
+      "TitleSelect": "Wybierz linie zamówienia, aby włączyć opcje eksportu.",
+      "TitleOptions": "Opcje eksportu",
+      "Buttons": {
+        "Preview": "Podgląd",
+        "Copy": "Kopiuj",
+        "Download": "Pobierz"
+      },
+      "Loading": "Pobieranie danych z API Almy...",
+      "PreviewTitle": "Podgląd pliku",
+      "SelectTitle": "Wybierz linie zamówienia"
+    },
+    "Alerts": {
+      "SelectOne": "Wybierz przynajmniej jedną linię zamówienia.",
+      "NoFieldsSelected": "Nie wybrano żadnych pól do eksportu. Sprawdź Ustawienia.",
+      "PreviewSuccess": "Pomyślnie wygenerowano podgląd.",
+      "PreviewError": "Błąd podczas generowania podglądu: ",
+      "CopySuccess": "Skopiowano do schowka.",
+      "CopyError": "Nie udało się skopiować zawartości.",
+      "CopyPrepError": "Błąd podczas przygotowania treści do skopiowania: ",
+      "DownloadSuccess": "Rozpoczęto pobieranie pliku.",
+      "DownloadError": "Błąd podczas przygotowania pliku do pobrania: "
+    },
+    "ExportFilename": "eksport_linii_zamowien.txt"
+  },
+  "Settings": {
+    "Buttons": {
+      "Save": "Zapisz",
+      "Reset": "Resetuj ustawienia"
+    },
+    "Title": "Ustawienia",
+    "Instruction": "Wybierz pola, które chcesz wyeksportować. Kliknij nazwę pola, aby zmienić nazwę kolumny, i przeciągnij, aby zmienić kolejność. W polu tekstowym poniżej możesz dostosować nagłówek pliku.",
+    "CustomHeader": {
+      "Label": "Niestandardowy nagłówek pliku",
+      "Placeholder": "Wprowadź tekst, który pojawi się na górze eksportowanego pliku."
+    },
+    "Fields": {
+      "ToggleAll": "Zaznacz/Odznacz wszystko",
+      "CustomizeLabel": "Dostosuj nazwę kolumny"
+    },
+    "Alerts": {
+      "LoadError": "Błąd podczas wczytywania ustawień: ",
+      "ResetInfo": "Ustawienia zostały zresetowane. Kliknij Zapisz, aby zastosować.",
+      "SaveSuccess": "Pomyślnie zapisano ustawienia!",
+      "SaveError": "Błąd podczas zapisywania ustawień: "
+    }
+  },
+  "Fields": {
+    "ISBN": "ISBN",
+    "Title": "Tytuł",
+    "Quantity": "Ilość",
+    "PONumber": "Numer ZK",
+    "Author": "Autor",
+    "LineNumber": "Numer linii",
+    "Owner": "Właściciel",
+    "Vendor": "Dostawca",
+    "Price": "Cena",
+    "Fund": "Fundusz"
+  }
 }
