@@ -1,66 +1,72 @@
 {
+  "Fields": {
+    "Author": "Autor",
+    "Fund": "Budżet",
+    "ISBN": "ISBN",
+    "LineNumber": "Numer linii",
+    "Owner": "Właściciel pozycji zamówienia",
+    "PONumber": "Numer zamówienia",
+    "Price": "Cena",
+    "Quantity": "Ilość",
+    "Title": "Tytuł",
+    "Vendor": "Dostawca"
+  },
   "Main": {
-    "NoEntities": {
-      "Title": "Witaj w aplikacji PO Line Export",
-      "Description": "Aby rozpocząć, przejdź do Listy linii zamówień w Almie. Ta aplikacja automatycznie wyświetli widoczne pozycje, które możesz wybrać i wyeksportować."
+    "Alerts": {
+      "CopyError": "Nie udało się skopiować zawartości.",
+      "CopyPrepError": "Błąd podczas przygotowania treści do skopiowania: ",
+      "CopySuccess": "Skopiowano do schowka.",
+      "DownloadError": "Błąd podczas przygotowania pliku do pobrania: ",
+      "DownloadSuccess": "Rozpoczęto pobieranie pliku.",
+      "NoFieldsSelected": "Nie wybrano żadnych pól do eksportu. Sprawdź Ustawienia.",
+      "PreviewError": "Błąd podczas generowania podglądu: ",
+      "PreviewSuccess": "Wygenerowano podgląd.",
+      "SelectOne": "Wybierz przynajmniej jedną linię zamówienia."
     },
     "EntityList": {
-      "TitleSelect": "Wybierz linie zamówienia, aby włączyć opcje eksportu.",
-      "TitleOptions": "Opcje eksportu",
       "Buttons": {
-        "Preview": "Podgląd",
         "Copy": "Kopiuj",
-        "Download": "Pobierz"
+        "Download": "Pobierz",
+        "Preview": "Zobacz"
       },
       "Loading": "Pobieranie danych z API Almy...",
       "PreviewTitle": "Podgląd pliku",
-      "SelectTitle": "Wybierz linie zamówienia"
+      "SelectTitle": "Wybierz linie zamówienia",
+      "TitleOptions": "Opcje eksportu",
+      "TitleSelect": "Wybierz linie zamówienia, aby zobaczyć opcje eksportu."
     },
-    "Alerts": {
-      "SelectOne": "Wybierz przynajmniej jedną linię zamówienia.",
-      "NoFieldsSelected": "Nie wybrano żadnych pól do eksportu. Sprawdź Ustawienia.",
-      "PreviewSuccess": "Pomyślnie wygenerowano podgląd.",
-      "PreviewError": "Błąd podczas generowania podglądu: ",
-      "CopySuccess": "Skopiowano do schowka.",
-      "CopyError": "Nie udało się skopiować zawartości.",
-      "CopyPrepError": "Błąd podczas przygotowania treści do skopiowania: ",
-      "DownloadSuccess": "Rozpoczęto pobieranie pliku.",
-      "DownloadError": "Błąd podczas przygotowania pliku do pobrania: "
+    "ExportFilename": "eksport_linii_zamowien.txt",
+    "NoEntities": {
+      "Description": "Aby rozpocząć, przejdź do Listy linii zamówień w Almie. Aplikacja automatycznie wyświetli widoczne pozycje, które możesz wybrać i wyeksportować.",
+      "Title": "Witaj w aplikacji PO Line Export"
     },
-    "ExportFilename": "eksport_linii_zamowien.txt"
+    "SelectEntities": {
+      "CheckAll": "Zaznacz/Odznacz wszystko"
+    }
   },
   "Settings": {
-    "Buttons": {
-      "Save": "Zapisz",
-      "Reset": "Resetuj ustawienia"
+    "Alerts": {
+      "LoadError": "Błąd podczas wczytywania ustawień: ",
+      "ResetInfo": "Ustawienia zostały zresetowane. Kliknij Zapisz, aby zastosować.",
+      "SaveError": "Błąd podczas zapisywania ustawień: ",
+      "SaveSuccess": "Pomyślnie zapisano ustawienia!"
     },
-    "Title": "Ustawienia",
-    "Instruction": "Wybierz pola, które chcesz wyeksportować. Kliknij nazwę pola, aby zmienić nazwę kolumny, i przeciągnij, aby zmienić kolejność. W polu tekstowym poniżej możesz dostosować nagłówek pliku.",
+    "Buttons": {
+      "Reset": "Resetuj",
+      "Save": "Zapisz"
+    },
     "CustomHeader": {
       "Label": "Niestandardowy nagłówek pliku",
       "Placeholder": "Wprowadź tekst, który pojawi się na górze eksportowanego pliku."
     },
     "Fields": {
-      "ToggleAll": "Zaznacz/Odznacz wszystko",
-      "CustomizeLabel": "Dostosuj nazwę kolumny"
+      "CustomizeLabel": "Dostosuj nazwę kolumny",
+      "ToggleAll": "Zaznacz/Odznacz wszystko"
     },
-    "Alerts": {
-      "LoadError": "Błąd podczas wczytywania ustawień: ",
-      "ResetInfo": "Ustawienia zostały zresetowane. Kliknij Zapisz, aby zastosować.",
-      "SaveSuccess": "Pomyślnie zapisano ustawienia!",
-      "SaveError": "Błąd podczas zapisywania ustawień: "
-    }
+    "Instruction": "Wybierz pola, które chcesz wyeksportować. Kliknij nazwę pola, aby zmienić nazwę kolumny, i przeciągnij, aby zmienić kolejność. W polu tekstowym poniżej możesz dostosować nagłówek pliku.",
+    "Title": "Ustawienia"
   },
-  "Fields": {
-    "ISBN": "ISBN",
-    "Title": "Tytuł",
-    "Quantity": "Ilość",
-    "PONumber": "Numer ZK",
-    "Author": "Autor",
-    "LineNumber": "Numer linii",
-    "Owner": "Właściciel",
-    "Vendor": "Dostawca",
-    "Price": "Cena",
-    "Fund": "Fundusz"
+  "TopMenu": {
+    "Home": "Wróć"
   }
 }

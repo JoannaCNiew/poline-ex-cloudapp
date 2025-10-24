@@ -14,6 +14,7 @@
 
         <ng-template #noentities>
             <div class="cloudapp-body">
+                <!-- Te tłumaczenia działają poprawnie, więc zostają -->
                 <h1 translate>Main.NoEntities.Title</h1>
                 <p translate>Main.NoEntities.Description</p>
             </div>
@@ -24,37 +25,40 @@
 
                 <mat-card *ngIf="visibleEntities.length > 0">
                     <mat-card-header>
-                        <mat-card-title *ngIf="selectedEntities.length === 0" style="font-size: 17px; font-weight: normal;" translate>Main.EntityList.TitleSelect</mat-card-title>
-                        <mat-card-title *ngIf="selectedEntities.length > 0" style="font-size: 17px; font-weight: normal;" translate>Main.EntityList.TitleOptions</mat-card-title>
+                        <!-- POPRAWKA: Używamy zmiennych z TS -->
+                        <mat-card-title *ngIf="selectedEntities.length === 0" style="font-size: 17px; font-weight: normal;">{{ titleSelectText }}</mat-card-title>
+                        <mat-card-title *ngIf="selectedEntities.length > 0" style="font-size: 17px; font-weight: normal;">{{ titleOptionsText }}</mat-card-title>
                     </mat-card-header>
                     <mat-card-content>
                         
                         <div class="export-actions" style="display: flex; flex-direction: row; align-items: center; margin-top: 10px;">
 
-                            <button mat-raised-button color="primary" 
-                                (click)="onGenerateExport()" 
-                                [disabled]="loading || selectedEntities.length === 0">
+                            <!-- POPRAWKA: Używamy zmiennych z TS -->
+                            <button mat-raised-button color="primary" (click)="onGenerateExport()" [disabled]="loading || selectedEntities.length === 0">
                                 <mat-icon>visibility</mat-icon>
-                                {{ 'Main.EntityList.Buttons.Preview' | translate }}
+                                <span>{{ previewButtonText }}</span>
                             </button>
                             
+                            <!-- POPRAWKA: Używamy zmiennych z TS -->
                             <button mat-raised-button color="accent" 
                                 (click)="copyToClipboard()" 
                                 [disabled]="loading || selectedEntities.length === 0" 
                                 style="margin-left: 10px;">
                                 <mat-icon>content_copy</mat-icon>
-                                {{ 'Main.EntityList.Buttons.Copy' | translate }}
+                                <span>{{ copyButtonText }}</span>
                             </button>
 
+                            <!-- POPRAWKA: Używamy zmiennych z TS -->
                             <button mat-raised-button color="primary" 
                                 (click)="downloadFile()" 
                                 [disabled]="loading || selectedEntities.length === 0" 
                                 style="margin-left: 10px;">
                                 <mat-icon>save_alt</mat-icon>
-                                {{ 'Main.EntityList.Buttons.Download' | translate }}
+                                <span>{{ downloadButtonText }}</span>
                             </button>
                         </div>
                         
+                        <!-- To tłumaczenie działało poprawnie, więc zostaje -->
                         <div *ngIf="loading" style="margin-top: 10px;">
                             <small translate>Main.EntityList.Loading</small>
                         </div>
@@ -62,6 +66,7 @@
                     </mat-card-content>
                 </mat-card>
 
+                <!-- To tłumaczenie działało poprawnie, więc zostaje -->
                 <mat-card *ngIf="previewContent" class="preview-card">
                     <mat-card-header>
                         <mat-card-title style="font-size: 17px; font-weight: normal;" translate>Main.EntityList.PreviewTitle</mat-card-title>
@@ -74,7 +79,8 @@
                 <mat-card>
                     <mat-card-header>
                         <mat-card-title style="font-size: 17px; font-weight: normal;">
-                            <span translate>Main.EntityList.SelectTitle</span> ({{ selectedEntities.length }}/{{ visibleEntities.length }})
+                             <!-- POPRAWKA: Używamy zmiennej z TS -->
+                            <span>{{ selectTitleText }}</span> ({{ selectedEntities.length }}/{{ visibleEntities.length }})
                         </mat-card-title>
                     </mat-card-header>
                     <mat-card-content>

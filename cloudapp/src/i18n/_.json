@@ -1,4 +1,16 @@
 {
+	"Fields": {
+		"Author": "",
+		"Fund": "",
+		"ISBN": "",
+		"LineNumber": "",
+		"Owner": "",
+		"PONumber": "",
+		"Price": "",
+		"Quantity": "",
+		"Title": "",
+		"Vendor": ""
+	},
 	"Main": {
 		"Alerts": {
 			"CopyError": "",
@@ -27,7 +39,10 @@
 		"NoEntities": {
 			"Description": "",
 			"Title": ""
-		}
+		},
+    "SelectEntities": {
+      "CheckAll": ""
+    }
 	},
 	"Settings": {
 		"Alerts": {
@@ -50,5 +65,8 @@
 		},
 		"Instruction": "",
 		"Title": ""
+	},
+	"TopMenu": {
+		"Home": ""
 	}
 }
