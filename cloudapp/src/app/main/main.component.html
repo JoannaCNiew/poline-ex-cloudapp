@@ -14,8 +14,9 @@
 
         <ng-template #noentities>
             <div class="cloudapp-body">
-                <h1>Welcome to the PO Line Export CloudApp</h1>
-                <p>To begin, go to the PO Line List in Alma. This app will automatically display the visible items, which you can select and export.</p>
+                <!-- Te tłumaczenia działają poprawnie, więc zostają -->
+                <h1 translate>Main.NoEntities.Title</h1>
+                <p translate>Main.NoEntities.Description</p>
             </div>
         </ng-template>
 
@@ -24,42 +25,51 @@
 
                 <mat-card *ngIf="visibleEntities.length > 0">
                     <mat-card-header>
-                        <mat-card-title *ngIf="selectedEntities.length === 0" style="font-size: 17px; font-weight: normal;">Select PO lines to enable export options.</mat-card-title>
-                        <mat-card-title *ngIf="selectedEntities.length > 0" style="font-size: 17px; font-weight: normal;">Export Options</mat-card-title>
+                        <!-- POPRAWKA: Używamy zmiennych z TS -->
+                        <mat-card-title *ngIf="selectedEntities.length === 0" style="font-size: 17px; font-weight: normal;">{{ titleSelectText }}</mat-card-title>
+                        <mat-card-title *ngIf="selectedEntities.length > 0" style="font-size: 17px; font-weight: normal;">{{ titleOptionsText }}</mat-card-title>
                     </mat-card-header>
                     <mat-card-content>
                         
                         <div class="export-actions" style="display: flex; flex-direction: row; align-items: center; margin-top: 10px;">
 
+                            <!-- POPRAWKA: Używamy zmiennych z TS -->
                             <button mat-raised-button color="primary" (click)="onGenerateExport()" [disabled]="loading || selectedEntities.length === 0">
-                                <mat-icon>visibility</mat-icon> Preview
+                                <mat-icon>visibility</mat-icon>
+                                <span>{{ previewButtonText }}</span>
                             </button>
                             
+                            <!-- POPRAWKA: Używamy zmiennych z TS -->
                             <button mat-raised-button color="accent" 
                                 (click)="copyToClipboard()" 
                                 [disabled]="loading || selectedEntities.length === 0" 
                                 style="margin-left: 10px;">
-                                <mat-icon>content_copy</mat-icon> Copy
+                                <mat-icon>content_copy</mat-icon>
+                                <span>{{ copyButtonText }}</span>
                             </button>
 
+                            <!-- POPRAWKA: Używamy zmiennych z TS -->
                             <button mat-raised-button color="primary" 
                                 (click)="downloadFile()" 
                                 [disabled]="loading || selectedEntities.length === 0" 
                                 style="margin-left: 10px;">
-                                <mat-icon>save_alt</mat-icon> Download
+                                <mat-icon>save_alt</mat-icon>
+                                <span>{{ downloadButtonText }}</span>
                             </button>
                         </div>
                         
+                        <!-- To tłumaczenie działało poprawnie, więc zostaje -->
                         <div *ngIf="loading" style="margin-top: 10px;">
-                            <small>Fetching data from Alma API...</small>
+                            <small translate>Main.EntityList.Loading</small>
                         </div>
 
                     </mat-card-content>
                 </mat-card>
 
+                <!-- To tłumaczenie działało poprawnie, więc zostaje -->
                 <mat-card *ngIf="previewContent" class="preview-card">
                     <mat-card-header>
-                        <mat-card-title style="font-size: 17px; font-weight: normal;">File Preview</mat-card-title>
+                        <mat-card-title style="font-size: 17px; font-weight: normal;" translate>Main.EntityList.PreviewTitle</mat-card-title>
                     </mat-card-header>
                     <mat-card-content>
                         <textarea matInput rows="5" [value]="previewContent" readonly #exportTextArea class="mat-input-element" style="width: 100%; border: 1px solid #ccc; border-radius: 4px; padding: 5px; box-sizing: border-box; resize: vertical;"></textarea>
@@ -69,7 +79,8 @@
                 <mat-card>
                     <mat-card-header>
                         <mat-card-title style="font-size: 17px; font-weight: normal;">
-                            Select PO Lines ({{ selectedEntities.length }}/{{ visibleEntities.length }})
+                             <!-- POPRAWKA: Używamy zmiennej z TS -->
+                            <span>{{ selectTitleText }}</span> ({{ selectedEntities.length }}/{{ visibleEntities.length }})
                         </mat-card-title>
                     </mat-card-header>
                     <mat-card-content>
@@ -89,4 +100,3 @@
 <div class="loading-shade" *ngIf="loading">
   <mat-spinner diameter="50"></mat-spinner>
 </div>
-

@@ -1,0 +1,72 @@
+{
+	"Fields": {
+		"Author": "",
+		"Fund": "",
+		"ISBN": "",
+		"LineNumber": "",
+		"Owner": "",
+		"PONumber": "",
+		"Price": "",
+		"Quantity": "",
+		"Title": "",
+		"Vendor": ""
+	},
+	"Main": {
+		"Alerts": {
+			"CopyError": "",
+			"CopyPrepError": "",
+			"CopySuccess": "",
+			"DownloadError": "",
+			"DownloadSuccess": "",
+			"NoFieldsSelected": "",
+			"PreviewError": "",
+			"PreviewSuccess": "",
+			"SelectOne": ""
+		},
+		"EntityList": {
+			"Buttons": {
+				"Copy": "",
+				"Download": "",
+				"Preview": ""
+			},
+			"Loading": "",
+			"PreviewTitle": "",
+			"SelectTitle": "",
+			"TitleOptions": "",
+			"TitleSelect": ""
+		},
+		"ExportFilename": "",
+		"NoEntities": {
+			"Description": "",
+			"Title": ""
+		},
+    "SelectEntities": {
+      "CheckAll": ""
+    }
+	},
+	"Settings": {
+		"Alerts": {
+			"LoadError": "",
+			"ResetInfo": "",
+			"SaveError": "",
+			"SaveSuccess": ""
+		},
+		"Buttons": {
+			"Reset": "",
+			"Save": ""
+		},
+		"CustomHeader": {
+			"Label": "",
+			"Placeholder": ""
+		},
+		"Fields": {
+			"CustomizeLabel": "",
+			"ToggleAll": ""
+		},
+		"Instruction": "",
+		"Title": ""
+	},
+	"TopMenu": {
+		"Home": ""
+	}
+}

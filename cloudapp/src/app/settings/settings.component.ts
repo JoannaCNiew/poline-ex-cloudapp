@@ -1,12 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormArray, FormControl } from '@angular/forms';
 import { CloudAppSettingsService, AlertService } from '@exlibris/exl-cloudapp-angular-lib';
-import { AVAILABLE_FIELDS } from '../main/field-definitions'; 
+import { AVAILABLE_FIELDS } from '../main/field-definitions';
 import { Router } from '@angular/router';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { AppSettings, FieldConfig } from '../models/settings';
-import { Subscription } from 'rxjs'; 
+import { Subscription } from 'rxjs';
 import { MatCheckboxChange } from '@angular/material/checkbox';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-settings',
@@ -18,10 +19,10 @@ export class SettingsComponent implements OnInit, OnDestroy {
   settings: AppSettings = { availableFields: [], customHeader: '# PO Line Export' };
   form!: FormGroup;
   saving = false;
-  
+
   expandedIndex: number | null = null;
   hoverIndex: number | null = null;
-  
+
   private configSubscription: Subscription | undefined;
 
   get fieldsFormArray(): FormArray {
@@ -44,7 +45,8 @@ export class SettingsComponent implements OnInit, OnDestroy {
   constructor(
     private settingsService: CloudAppSettingsService,
     private alert: AlertService,
-    public router: Router, 
+    public router: Router,
+    private translate: TranslateService
   ) {
     this.form = new FormGroup({
       availableFields: new FormArray([]),
@@ -62,7 +64,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
         }
         this.initForm();
       },
-      error: (err: any) => this.alert.error('Failed to load settings: ' + err.message)
+      error: (err: any) => this.alert.error(this.translate.instant('Settings.Alerts.LoadError') + err.message)
     });
   }
 
@@ -77,14 +79,14 @@ export class SettingsComponent implements OnInit, OnDestroy {
     this.settings.availableFields.forEach(field => {
       this.fieldsFormArray.push(new FormGroup({
         name: new FormControl(field.name),
-        label: new FormControl(field.label),
+        label: new FormControl(field.label), 
         selected: new FormControl(field.selected),
-        customLabel: new FormControl(field.customLabel)
+        customLabel: new FormControl(this.translate.instant(field.customLabel))
       }));
     });
     this.form.patchValue({ customHeader: this.settings.customHeader });
   }
-  
+
   toggleExpand(index: number) {
     this.expandedIndex = this.expandedIndex === index ? null : index;
   }
@@ -102,10 +104,10 @@ export class SettingsComponent implements OnInit, OnDestroy {
   }
 
   resetSettings() {
-    this.alert.info('Settings have been reset. Click Save to apply.', { autoClose: true });
-    const defaultSettings: AppSettings = { 
-      availableFields: JSON.parse(JSON.stringify(AVAILABLE_FIELDS)), 
-      customHeader: '# PO Line Export' 
+    this.alert.info(this.translate.instant('Settings.Alerts.ResetInfo'), { autoClose: true });
+    const defaultSettings: AppSettings = {
+      availableFields: JSON.parse(JSON.stringify(AVAILABLE_FIELDS)),
+      customHeader: '# PO Line Export'
     };
     this.settings = defaultSettings;
     this.initForm();
@@ -113,23 +115,38 @@ export class SettingsComponent implements OnInit, OnDestroy {
   }
 
   saveSettings() {
-    if (this.saving) return; 
+    if (this.saving) return;
     this.saving = true;
-    
+
     this.settingsService.set(this.form.value).subscribe({
       next: () => {
         this.saving = false;
-        this.alert.success('Settings saved successfully!');
-        this.router.navigate(['/']); 
+        this.alert.success(this.translate.instant('Settings.Alerts.SaveSuccess'));
+        this.router.navigate(['/']);
       },
       error: (err: any) => {
         this.saving = false;
-        this.alert.error('Failed to save settings: ' + err.message);
+        this.alert.error(this.translate.instant('Settings.Alerts.SaveError') + err.message);
       }
     });
   }
 
   onCancel(): void {
-    this.router.navigate(['/']); 
+    this.router.navigate(['/']);
   }
-}
+
+  
+  private _translationKeyCollector() {
+    this.translate.instant('Fields.ISBN');
+    this.translate.instant('Fields.Title');
+    this.translate.instant('Fields.Quantity');
+    this.translate.instant('Fields.PONumber');
+    this.translate.instant('Fields.Author');
+    this.translate.instant('Fields.LineNumber');
+    this.translate.instant('Fields.Owner');
+    this.translate.instant('Fields.Vendor');
+    this.translate.instant('Fields.Price');
+    this.translate.instant('Fields.Fund');
+  }
+
+} 

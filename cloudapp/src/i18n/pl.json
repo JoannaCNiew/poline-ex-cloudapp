@@ -1,4 +1,72 @@
 {
-  "SelectEntities.CheckAll": "Zaznacz/Odznacz wszystko",
-  "SelectEntities.Selected": "Wybrano"
+  "Fields": {
+    "Author": "Autor",
+    "Fund": "Budżet",
+    "ISBN": "ISBN",
+    "LineNumber": "Numer linii",
+    "Owner": "Właściciel pozycji zamówienia",
+    "PONumber": "Numer zamówienia",
+    "Price": "Cena",
+    "Quantity": "Ilość",
+    "Title": "Tytuł",
+    "Vendor": "Dostawca"
+  },
+  "Main": {
+    "Alerts": {
+      "CopyError": "Nie udało się skopiować zawartości.",
+      "CopyPrepError": "Błąd podczas przygotowania treści do skopiowania: ",
+      "CopySuccess": "Skopiowano do schowka.",
+      "DownloadError": "Błąd podczas przygotowania pliku do pobrania: ",
+      "DownloadSuccess": "Rozpoczęto pobieranie pliku.",
+      "NoFieldsSelected": "Nie wybrano żadnych pól do eksportu. Sprawdź Ustawienia.",
+      "PreviewError": "Błąd podczas generowania podglądu: ",
+      "PreviewSuccess": "Wygenerowano podgląd.",
+      "SelectOne": "Wybierz przynajmniej jedną linię zamówienia."
+    },
+    "EntityList": {
+      "Buttons": {
+        "Copy": "Kopiuj",
+        "Download": "Pobierz",
+        "Preview": "Zobacz"
+      },
+      "Loading": "Pobieranie danych z API Almy...",
+      "PreviewTitle": "Podgląd pliku",
+      "SelectTitle": "Wybierz linie zamówienia",
+      "TitleOptions": "Opcje eksportu",
+      "TitleSelect": "Wybierz linie zamówienia, aby zobaczyć opcje eksportu."
+    },
+    "ExportFilename": "eksport_linii_zamowien.txt",
+    "NoEntities": {
+      "Description": "Aby rozpocząć, przejdź do Listy linii zamówień w Almie. Aplikacja automatycznie wyświetli widoczne pozycje, które możesz wybrać i wyeksportować.",
+      "Title": "Witaj w aplikacji PO Line Export"
+    },
+    "SelectEntities": {
+      "CheckAll": "Zaznacz/Odznacz wszystko"
+    }
+  },
+  "Settings": {
+    "Alerts": {
+      "LoadError": "Błąd podczas wczytywania ustawień: ",
+      "ResetInfo": "Ustawienia zostały zresetowane. Kliknij Zapisz, aby zastosować.",
+      "SaveError": "Błąd podczas zapisywania ustawień: ",
+      "SaveSuccess": "Pomyślnie zapisano ustawienia!"
+    },
+    "Buttons": {
+      "Reset": "Resetuj",
+      "Save": "Zapisz"
+    },
+    "CustomHeader": {
+      "Label": "Niestandardowy nagłówek pliku",
+      "Placeholder": "Wprowadź tekst, który pojawi się na górze eksportowanego pliku."
+    },
+    "Fields": {
+      "CustomizeLabel": "Dostosuj nazwę kolumny",
+      "ToggleAll": "Zaznacz/Odznacz wszystko"
+    },
+    "Instruction": "Wybierz pola, które chcesz wyeksportować. Kliknij nazwę pola, aby zmienić nazwę kolumny, i przeciągnij, aby zmienić kolejność. W polu tekstowym poniżej możesz dostosować nagłówek pliku.",
+    "Title": "Ustawienia"
+  },
+  "TopMenu": {
+    "Home": "Wróć"
+  }
 }
