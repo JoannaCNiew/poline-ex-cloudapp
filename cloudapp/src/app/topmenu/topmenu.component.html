@@ -1,13 +1,13 @@
 <div class="title" [class.show-actions]="route.url !== '/'">
-    <div class="eca-actions" style="display: flex; justify-content: flex-end; align-items: center; width: 100%;">
-        
-        <!-- Dodano style padding -->
-        <button mat-flat-button color="secondary" [routerLink]="['/']" *ngIf="route.url === '/settings'" style="padding-left: 0.5rem; padding-right: 0.5rem;">
-            <mat-icon>arrow_back</mat-icon>
-            <span>{{ 'TopMenu.Home' | translate }}</span>
-        </button>
+    
+    <div class="eca-actions"> 
+        
+        <button mat-button color="secondary" [routerLink]="['/']" *ngIf="route.url === '/settings'">
+            <mat-icon>arrow_back</mat-icon>
+            <span>{{ 'TopMenu.Home' | translate }}</span> 
+        </button>
 
-        <ng-content select="[buttons]"></ng-content>
+        <ng-content select="[buttons]"></ng-content>
 
-    </div>
+    </div>
 </div>
