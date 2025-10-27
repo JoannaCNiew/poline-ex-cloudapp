@@ -1,6 +1,3 @@
-// Reszta stylów pozostaje...
-
-// --- ZMIANA DLA FIELD-ROW LAYOUT ---
 .field-row-container {
     display: flex;
     flex-direction: column;
@@ -12,24 +9,22 @@
     cursor: default;
 }
 
-/* KLUCZOWA ZMIANA: Wyrównanie elementów w głównym wierszu */
 .field-item {
-    display: flex; /* Ustawia elementy w poziomie */
+    display: flex; 
     align-items: center;
     justify-content: space-between;
     min-height: 36px;
-    width: 100%; /* Rozciąga kontener na całą szerokość */
+    width: 100%; 
 }
 
 .drag-handle-icon {
     cursor: grab;
     color: #616161;
-    margin-right: 10px; /* DODANY PRAWY MARGINES */
+    margin-right: 10px; 
 }
 
-/* KOMÓRKA Z ETYKIETĄ POLA (kliknięcie rozwija) */
 .field-label-cell {
-    flex-grow: 1; /* Pozwala etykiecie zająć jak najwięcej miejsca */
+    flex-grow: 1; 
     padding: 0 10px;
     font-size: 16px;
     cursor: pointer;

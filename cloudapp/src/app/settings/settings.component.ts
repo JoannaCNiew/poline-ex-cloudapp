@@ -10,143 +10,146 @@ import { MatCheckboxChange } from '@angular/material/checkbox';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
-  selector: 'app-settings',
-  templateUrl: './settings.component.html',
-  styleUrls: ['./settings.component.scss']
+  selector: 'app-settings',
+  templateUrl: './settings.component.html',
+  styleUrls: ['./settings.component.scss']
 })
 export class SettingsComponent implements OnInit, OnDestroy {
 
-  settings: AppSettings = { availableFields: [], customHeader: '# PO Line Export' };
-  form!: FormGroup;
-  saving = false;
+  settings: AppSettings = { availableFields: [], customHeader: '# PO Line Export' };
+  form!: FormGroup;
+  saving = false;
 
-  expandedIndex: number | null = null;
-  hoverIndex: number | null = null;
+  expandedIndex: number | null = null;
+  hoverIndex: number | null = null;
 
-  private configSubscription: Subscription | undefined;
+  private configSubscription: Subscription | undefined;
 
-  get fieldsFormArray(): FormArray {
-    return this.form.get('availableFields') as FormArray;
-  }
+  get fieldsFormArray(): FormArray {
+    return this.form.get('availableFields') as FormArray;
+  }
 
-  get selectedFieldsCount(): number {
-    if (!this.form) return 0;
-    return this.fieldsFormArray.controls.filter(control => control.value.selected).length;
-  }
+  get selectedFieldsCount(): number {
+    if (!this.form) return 0;
+    return this.fieldsFormArray.controls.filter(control => control.value.selected).length;
+  }
 
-  get allFieldsSelected(): boolean {
-    return this.fieldsFormArray.length > 0 && this.selectedFieldsCount === this.fieldsFormArray.length;
-  }
+  get allFieldsSelected(): boolean {
+    return this.fieldsFormArray.length > 0 && this.selectedFieldsCount === this.fieldsFormArray.length;
+  }
 
-  get someFieldsSelected(): boolean {
-    return this.selectedFieldsCount > 0 && !this.allFieldsSelected;
-  }
+  get someFieldsSelected(): boolean {
+    return this.selectedFieldsCount > 0 && !this.allFieldsSelected;
+  }
 
-  constructor(
-    private settingsService: CloudAppSettingsService,
-    private alert: AlertService,
-    public router: Router,
-    private translate: TranslateService
-  ) {
-    this.form = new FormGroup({
-      availableFields: new FormArray([]),
-      customHeader: new FormControl('')
-    });
-  }
+  constructor(
+    private settingsService: CloudAppSettingsService,
+    private alert: AlertService,
+    public router: Router,
+    private translate: TranslateService
+  ) {
+    this.form = new FormGroup({
+      availableFields: new FormArray([]),
+      customHeader: new FormControl('')
+    });
+  }
 
-  ngOnInit() {
-    this.configSubscription = this.settingsService.get().subscribe({
-      next: (settings: any) => {
-        const defaultSettings: AppSettings = { availableFields: [...AVAILABLE_FIELDS], customHeader: '# PO Line Export' };
-        this.settings = settings && settings.availableFields ? settings : defaultSettings;
-        if (!this.settings.customHeader) {
-          this.settings.customHeader = defaultSettings.customHeader;
-        }
-        this.initForm();
-      },
-      error: (err: any) => this.alert.error(this.translate.instant('Settings.Alerts.LoadError') + err.message)
-    });
-  }
+  ngOnInit() {
+    this.configSubscription = this.settingsService.get().subscribe({
+      next: (settings: any) => {
+        const defaultSettings: AppSettings = { availableFields: [...AVAILABLE_FIELDS], customHeader: '# PO Line Export' };
+        this.settings = settings && settings.availableFields ? settings : defaultSettings;
+        if (!this.settings.customHeader) {
+          this.settings.customHeader = defaultSettings.customHeader;
+        }
+        this.initForm();
+      },
+      error: (err: any) => this.alert.error(this.translate.instant('Settings.Alerts.LoadError') + err.message)
+    });
+  }
 
-  ngOnDestroy(): void {
-    if (this.configSubscription) {
-      this.configSubscription.unsubscribe();
-    }
-  }
+  ngOnDestroy(): void {
+    if (this.configSubscription) {
+      this.configSubscription.unsubscribe();
+    }
+  }
 
-  initForm() {
-    this.fieldsFormArray.clear();
-    this.settings.availableFields.forEach(field => {
-      this.fieldsFormArray.push(new FormGroup({
-        name: new FormControl(field.name),
-        label: new FormControl(field.label), 
-        selected: new FormControl(field.selected),
-        customLabel: new FormControl(this.translate.instant(field.customLabel))
-      }));
-    });
-    this.form.patchValue({ customHeader: this.settings.customHeader });
-  }
+  initForm() {
+    this.fieldsFormArray.clear();
+    this.settings.availableFields.forEach(field => {
+      this.fieldsFormArray.push(new FormGroup({
+        name: new FormControl(field.name),
+        label: new FormControl(field.label), 
+        selected: new FormControl(field.selected),
+        customLabel: new FormControl(this.translate.instant(field.customLabel))
+      }));
+    });
+    this.form.patchValue({ customHeader: this.settings.customHeader });
+  }
 
-  toggleExpand(index: number) {
-    this.expandedIndex = this.expandedIndex === index ? null : index;
-  }
+  toggleExpand(index: number) {
+    this.expandedIndex = this.expandedIndex === index ? null : index;
+  }
 
-  drop(event: CdkDragDrop<FormGroup[]>) {
-    moveItemInArray(this.fieldsFormArray.controls, event.previousIndex, event.currentIndex);
-    this.form.markAsDirty();
-  }
+  drop(event: CdkDragDrop<FormGroup[]>) {
+    moveItemInArray(this.fieldsFormArray.controls, event.previousIndex, event.currentIndex);
+    
+    this.fieldsFormArray.updateValueAndValidity();
 
-  toggleSelectAll(event: MatCheckboxChange) {
-    this.fieldsFormArray.controls.forEach(control => {
-      control.get('selected')?.setValue(event.checked);
-    });
-    this.form.markAsDirty();
-  }
+    this.form.markAsDirty();
+  }
 
-  resetSettings() {
-    this.alert.info(this.translate.instant('Settings.Alerts.ResetInfo'), { autoClose: true });
-    const defaultSettings: AppSettings = {
-      availableFields: JSON.parse(JSON.stringify(AVAILABLE_FIELDS)),
-      customHeader: '# PO Line Export'
-    };
-    this.settings = defaultSettings;
-    this.initForm();
-    this.form.markAsDirty();
-  }
+  toggleSelectAll(event: MatCheckboxChange) {
+    this.fieldsFormArray.controls.forEach(control => {
+      control.get('selected')?.setValue(event.checked);
+    });
+    this.form.markAsDirty();
+  }
 
-  saveSettings() {
-    if (this.saving) return;
-    this.saving = true;
+  resetSettings() {
+    this.alert.info(this.translate.instant('Settings.Alerts.ResetInfo'), { autoClose: true });
+    const defaultSettings: AppSettings = {
+      availableFields: JSON.parse(JSON.stringify(AVAILABLE_FIELDS)),
+      customHeader: '# PO Line Export'
+    };
+    this.settings = defaultSettings;
+    this.initForm();
+    this.form.markAsDirty();
+  }
 
-    this.settingsService.set(this.form.value).subscribe({
-      next: () => {
-        this.saving = false;
-        this.alert.success(this.translate.instant('Settings.Alerts.SaveSuccess'));
-        this.router.navigate(['/']);
-      },
-      error: (err: any) => {
-        this.saving = false;
-        this.alert.error(this.translate.instant('Settings.Alerts.SaveError') + err.message);
-      }
-    });
-  }
+  saveSettings() {
+    if (this.saving) return;
+    this.saving = true;
 
-  onCancel(): void {
-    this.router.navigate(['/']);
-  }
+    this.settingsService.set(this.form.value).subscribe({
+      next: () => {
+        this.saving = false;
+        this.alert.success(this.translate.instant('Settings.Alerts.SaveSuccess'));
+        this.router.navigate(['/']);
+      },
+      error: (err: any) => {
+        this.saving = false;
+        this.alert.error(this.translate.instant('Settings.Alerts.SaveError') + err.message);
+      }
+    });
+  }
 
-  
-  private _translationKeyCollector() {
-    this.translate.instant('Fields.ISBN');
-    this.translate.instant('Fields.Title');
-    this.translate.instant('Fields.Quantity');
-    this.translate.instant('Fields.PONumber');
-    this.translate.instant('Fields.Author');
-    this.translate.instant('Fields.LineNumber');
-    this.translate.instant('Fields.Owner');
-    this.translate.instant('Fields.Vendor');
-    this.translate.instant('Fields.Price');
-    this.translate.instant('Fields.Fund');
-  }
+  onCancel(): void {
+    this.router.navigate(['/']);
+  }
 
-} 
+  
+  private _translationKeyCollector() {
+    this.translate.instant('Fields.ISBN');
+    this.translate.instant('Fields.Title');
+    this.translate.instant('Fields.Quantity');
+    this.translate.instant('Fields.PONumber');
+    this.translate.instant('Fields.Author');
+    this.translate.instant('Fields.LineNumber');
+    this.translate.instant('Fields.Owner');
+    this.translate.instant('Fields.Vendor');
+    this.translate.instant('Fields.Price');
+    this.translate.instant('Fields.Fund');
+  }
+
+}

@@ -8,7 +8,6 @@ import { SelectEntitiesModule } from '@exlibris/eca-components';
 import { AlertModule, CloudAppTranslateModule, InitService, MaterialModule } from '@exlibris/exl-cloudapp-angular-lib';
 import { CommonModule } from '@angular/common';
 
-// --- Importy Angular Material & CDK ---
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
@@ -20,7 +19,6 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule } from '@angular/material/dialog';
 
-// --- Twoje Komponenty ---
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MainComponent } from './main/main.component';
@@ -48,10 +46,8 @@ import { MultiSelectComponent } from './multi-select/multi-select.component';
         ReactiveFormsModule,
         SelectEntitiesModule,
 
-        // --- Tłumaczenia (tylko moduł Almy) ---
         CloudAppTranslateModule.forRoot(), 
 
-        // --- Kompletna lista modułów Material/CDK ---
         MatProgressSpinnerModule,
         MatCheckboxModule,
         MatRadioModule,
