@@ -3,13 +3,21 @@
    "title": "PO Line Export",
    "subtitle": "CloudApp",
    "author": "jcn",
-   "description": "This application enables downloading txt files with values from PO Lines",
+   "description": "This application enables downloading txt files with values from PO Lines.",
    "icon": {
       "type": "font",
-      "value": "fa fa-cart-arrow-down",
-      "background": "#3F51B5"
+      "value": "fa fa-cart-arrow-down"
+   },
+   "contentSecurity": {
+      "sandbox": {
+         "downloads": true
+      }
    },
    "pages": {
-      "settings": "/#/settings"
-   }
+      "settings": "/#/settings",
+      "help": "https://github.com/Twoj-Login/Nazwa-Repozytorium"
+   },
+   "entities": [
+      "PO_LINE"
+   ]
 }
