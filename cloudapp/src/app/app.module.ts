@@ -24,7 +24,6 @@ import { AppComponent } from './app.component';
 import { MainComponent } from './main/main.component';
 import { TopmenuComponent } from './topmenu/topmenu.component';
 import { SettingsComponent } from './settings/settings.component'; 
-import { MultiSelectComponent } from './multi-select/multi-select.component'; 
 
 @NgModule({
     declarations: [
@@ -32,7 +31,6 @@ import { MultiSelectComponent } from './multi-select/multi-select.component';
         MainComponent,
         TopmenuComponent,
         SettingsComponent,
-        MultiSelectComponent
     ],
     bootstrap: [AppComponent],
     imports: [
