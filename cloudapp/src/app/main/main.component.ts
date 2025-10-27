@@ -35,14 +35,12 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
   public alert: AlertService;  
   window: Window = window;
 
-  // === DODANE BRAKUJĄCE DEKLARACJE ===
-  titleSelectText: string = ''; // Tekst domyślny lub pusty
+  titleSelectText: string = ''; 
   titleOptionsText: string = '';
   previewButtonText: string = '';
   copyButtonText: string = '';
   downloadButtonText: string = '';
   selectTitleText: string = '';
-  // === KONIEC DODAWANIA ===
 
   private settings: AppSettings = { availableFields: [...AVAILABLE_FIELDS], customHeader: '# PO Line Export' };
   private settingsSubscription: Subscription = new Subscription();
@@ -57,7 +55,7 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
     private http: HttpClient,
     private settingsService: CloudAppSettingsService,
     private cd: ChangeDetectorRef,
-    private elementRef: ElementRef // Inject ElementRef for the component itself
+    private elementRef: ElementRef 
   ) {
     this.alert = alert;
     this.entities$ = this.eventsService.entities$.pipe(
@@ -66,8 +64,6 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
         this.visibleEntities = entities || [];  
         this.selectedEntities = [];  
         this.previewContent = null;
-        // Po załadowaniu encji, spróbujmy ponownie zaktualizować etykietę
-        // Dajemy trochę czasu na wyrenderowanie eca-select-entities
         setTimeout(() => this.updateSelectAllCheckboxLabel(), 200); 
       })
     );
@@ -85,19 +81,15 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
       this.exportFields = this.settings.availableFields.filter(field => field.selected);
     });
 
-    // Nasłuchujemy na zmianę języka
     this.langChangeSubscription = this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       console.log('Language changed:', event.lang);
-      this.loadTranslations(); // Załaduj tłumaczenia ponownie dla innych elementów
-      // Dajemy komponentowi <eca-select-entities> *więcej* czasu na odświeżenie po zmianie języka
-      setTimeout(() => this.updateSelectAllCheckboxLabel(), 300); // Zwiększony timeout
+      this.loadTranslations(); 
+      setTimeout(() => this.updateSelectAllCheckboxLabel(), 300); 
     });
 
-    // Ładujemy tłumaczenia przy inicjalizacji
     this.loadTranslations();
   }
 
-  // === Funkcja do ładowania tłumaczeń (bez zmian) ===
   private loadTranslations() {
     const keysToLoad = [
       'Main.EntityList.TitleSelect',
@@ -117,14 +109,11 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
       this.cd.markForCheck();
     });
   }
-  // === KONIEC funkcji ===
 
   ngAfterViewInit(): void {
-    // Dajemy komponentowi <eca-select-entities> *więcej* czasu na załadowanie się
     setTimeout(() => this.updateSelectAllCheckboxLabel(), 300); // Zwiększony timeout
   }
 
-  // === Funkcja do aktualizacji etykiety (bez zmian w logice, tylko wywołania) ===
   private updateSelectAllCheckboxLabel() {
     try {
       const selectEntitiesElement = this.elementRef.nativeElement.querySelector('eca-select-entities');
@@ -134,9 +123,7 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
         const labelElement = selectAllCheckboxLabel || genericLabel; 
 
         if (labelElement) {
-          // Pobieramy tłumaczenie *za każdym razem*
           const translatedText = this.translate.instant('Main.SelectEntities.CheckAll');
-          // Sprawdzamy, czy tekst wymaga aktualizacji
           if (labelElement.innerHTML !== `<b>${translatedText}</b>`) {
              labelElement.innerHTML = `<b>${translatedText}</b>`; 
              console.log('Checkbox label updated with bold to:', translatedText);
@@ -151,7 +138,6 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
       console.error('Error trying to update select all checkbox label:', error);
     }
   }
-  // === KONIEC funkcji ===
 
   ngOnDestroy(): void {
     if (this.settingsSubscription) this.settingsSubscription.unsubscribe();
