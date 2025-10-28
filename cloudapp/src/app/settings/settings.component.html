@@ -1,13 +1,17 @@
-<app-topmenu>
-  <div buttons>
+<div class="header-actions" style="display: flex; justify-content: flex-end; padding: 10px;">
+
+    <button mat-button color="secondary" [routerLink]="['/']" style="margin-right: 15px;">
+        <mat-icon>arrow_back</mat-icon>
+        <span>{{ 'TopMenu.Home' | translate }}</span> 
+    </button>
+
     <button mat-flat-button color="primary" (click)="saveSettings()" [disabled]="form.pristine || saving">
         <span>{{ 'Settings.Buttons.Save' | translate }}</span>
     </button>
-  </div>
-</app-topmenu>
+</div>
 
 <div class="loading-shade" *ngIf="saving">
-  <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
+    <mat-progress-spinner mode="indeterminate" diameter="50"></mat-progress-spinner>
 </div>
 
 <form [formGroup]="form" *ngIf="form" class="settings-form">
