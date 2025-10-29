@@ -1,13 +1,15 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormGroup, FormArray, FormControl } from '@angular/forms';
-import { CloudAppSettingsService, AlertService } from '@exlibris/exl-cloudapp-angular-lib';
+import { AlertService } from '@exlibris/exl-cloudapp-angular-lib'; 
+import { CloudAppSettingsService } from '@exlibris/exl-cloudapp-angular-lib'; 
 import { AVAILABLE_FIELDS } from '../main/field-definitions';
 import { Router } from '@angular/router';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { AppSettings, FieldConfig } from '../models/settings';
+import { AppSettings, FieldConfig, ProcessedSettings } from '../models/settings'; 
 import { Subscription } from 'rxjs';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 import { TranslateService } from '@ngx-translate/core';
+import { SettingsService } from '../settings.service';
 
 @Component({
   selector: 'app-settings',
@@ -41,12 +43,13 @@ export class SettingsComponent implements OnInit, OnDestroy {
   get someFieldsSelected(): boolean {
     return this.selectedFieldsCount > 0 && !this.allFieldsSelected;
   }
-
+  
   constructor(
-    private settingsService: CloudAppSettingsService,
+    private cloudSettingsService: CloudAppSettingsService, 
     private alert: AlertService,
     public router: Router,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private settingsService: SettingsService 
   ) {
     this.form = new FormGroup({
       availableFields: new FormArray([]),
@@ -55,13 +58,9 @@ export class SettingsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.configSubscription = this.settingsService.get().subscribe({
-      next: (settings: any) => {
-        const defaultSettings: AppSettings = { availableFields: [...AVAILABLE_FIELDS], customHeader: '# PO Line Export' };
-        this.settings = settings && settings.availableFields ? settings : defaultSettings;
-        if (!this.settings.customHeader) {
-          this.settings.customHeader = defaultSettings.customHeader;
-        }
+    this.configSubscription = this.settingsService.getSettings().subscribe({
+      next: (processed: ProcessedSettings) => {
+        this.settings = processed.settings;
         this.initForm();
       },
       error: (err: any) => this.alert.error(this.translate.instant('Settings.Alerts.LoadError') + err.message)
@@ -72,7 +71,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
     if (this.configSubscription) {
       this.configSubscription.unsubscribe();
     }
-  }
+}
 
   initForm() {
     this.fieldsFormArray.clear();
@@ -93,9 +92,7 @@ export class SettingsComponent implements OnInit, OnDestroy {
 
   drop(event: CdkDragDrop<FormGroup[]>) {
     moveItemInArray(this.fieldsFormArray.controls, event.previousIndex, event.currentIndex);
-    
-    this.fieldsFormArray.updateValueAndValidity();
-
+    this.fieldsFormArray.updateValueAndValidity();
     this.form.markAsDirty();
   }
 
@@ -121,11 +118,11 @@ export class SettingsComponent implements OnInit, OnDestroy {
     if (this.saving) return;
     this.saving = true;
 
-    this.settingsService.set(this.form.value).subscribe({
+    this.cloudSettingsService.set(this.form.value).subscribe({
       next: () => {
         this.saving = false;
         this.alert.success(this.translate.instant('Settings.Alerts.SaveSuccess'));
-        this.router.navigate(['/']);
+       this.router.navigate(['/']);
       },
       error: (err: any) => {
         this.saving = false;
@@ -137,7 +134,6 @@ export class SettingsComponent implements OnInit, OnDestroy {
   onCancel(): void {
     this.router.navigate(['/']);
   }
-
   
   private _translationKeyCollector() {
     this.translate.instant('Fields.ISBN');
@@ -153,3 +149,4 @@ export class SettingsComponent implements OnInit, OnDestroy {
   }
 
 }
+
