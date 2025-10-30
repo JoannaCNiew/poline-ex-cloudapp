@@ -128,7 +128,13 @@ export class ExportService {
                     case 'owner': return poLine.owner?.desc || '';
                     case 'vendor': return poLine.vendor?.desc || '';
                     case 'price': return (poLine.price?.sum || poLine.price?.amount || '0').toString();
-                    case 'fund': return poLine.fund_ledger?.name || '';
+                    case 'fund': {
+                        const fundCodes = (poLine.fund_distribution || [])
+                            .map((fund: any) => fund.fund_code?.value)
+                            .filter((value: string | undefined) => value) 
+                            .join('; '); 
+                        return fundCodes || '';
+                    }
                     case 'quantity': return (poLine.location || []).reduce((sum: number, loc: any) => sum + (loc.quantity || 0), 0);
                     default: return '';
                 }
