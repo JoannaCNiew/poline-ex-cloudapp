@@ -1,9 +1,18 @@
 {
    "id": "po-line-export",
    "title": "PO Line Export",
-   "subtitle": "CloudApp",
-   "author": "jcn",
-   "description": "This application enables downloading txt files with values from PO Lines.",
+   "subtitle": "This CloudApp facilitates PO lines download.",
+   "author": "Joanna Cieloch-Niewiadomska",
+   "description": [
+      {
+         "lang": "en",
+         "text": "This Cloud Application allows you to select values from PO lines and then preview, copy and download them as a text file."
+      },
+      {
+         "lang": "pl",
+         "text": "Aplikacja chmurowa pozwala wybrać wartości z linii zamówienia, a następnie zobaczyć je, skopiować oraz wyeksportować do pliku tekstowego."
+      }
+   ],
    "icon": {
       "type": "font",
       "value": "fa fa-cart-arrow-down"

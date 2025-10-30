@@ -1,42 +1,47 @@
 import { TestBed, fakeAsync, flush } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ExportService } from './export.service';
+import { ExportService, ExportResult } from './export.service';
 import {
     CloudAppRestService,
-    CloudAppConfigService,
     EntityType,
-    HttpMethod,
+    AlertService,
 } from '@exlibris/exl-cloudapp-angular-lib';
+import { TranslateModule, TranslateService, TranslateLoader } from '@ngx-translate/core';
 import { of, throwError } from 'rxjs';
-import { AVAILABLE_FIELDS } from './main/field-definitions';
 import { Entity } from '@exlibris/exl-cloudapp-angular-lib';
-import { AppSettings } from './models/settings';
+import { FieldConfig } from './models/settings';
+import { HttpClient } from '@angular/common/http';
+
+
+class TranslateHttpLoaderMock implements TranslateLoader {
+    getTranslation(lang: string): any {
+        return of({
+            'Main.Alerts.CopySuccess': 'Tłum: Skopiowano',
+            'Main.Alerts.CopyError': 'Tłum: Błąd kopiowania',
+            'Main.Alerts.DownloadSuccess': 'Tłum: Pobieranie sukces',
+            'Main.Alerts.NoPreviewContent': 'Tłum: Brak treści',
+            'Main.ExportFilename': 'export.txt',
+            'Fields.ISBN': 'Tłum: ISBN',
+            'Fields.Quantity': 'Tłum: Ilość',
+            'Fields.Title': 'Tłum: Tytuł',
+            'Fields.Price': 'Cena',
+            'Fields.Fund': 'Fundusz',
+            'Fields.LineNumber': 'Nr Linii',
+            'Fields.Owner': 'Właściciel',
+        });
+    }
+}
 
 const MOCK_ENTITIES: Entity[] = [
     { id: '1', link: '/alma/v1/po-lines/100', type: EntityType.PO_LINE, description: 'PO Line 1' },
     { id: '2', link: '/alma/v1/po-lines/200', type: EntityType.PO_LINE, description: 'PO Line 2' },
 ];
 
-const MOCK_SETTINGS_VALID: AppSettings = {
-    availableFields: [
-        { name: 'isbn', label: 'ISBN Label', selected: true, customLabel: 'Tłum: ISBN' },
-        { name: 'quantity', label: 'Quantity Label', selected: true, customLabel: 'Tłum: Ilość' },
-        { name: 'poNumber', label: 'PONumber Label', selected: false, customLabel: 'Tłum: Numer PO' },
-    ],
-    customHeader: '# Testowy Eksport'
-};
-
-const MOCK_SETTINGS_NO_FIELDS: AppSettings = {
-    availableFields: [
-        { name: 'isbn', label: 'ISBN Label', selected: false, customLabel: 'Tłum: ISBN' },
-    ],
-    customHeader: '# Testowy Eksport'
-};
-
-const MOCK_SETTINGS_EMPTY_HEADER: AppSettings = {
-    availableFields: MOCK_SETTINGS_VALID.availableFields,
-    customHeader: '' 
-};
+const MOCK_FIELDS_VALID: FieldConfig[] = [
+    { name: 'isbn', label: 'ISBN Label', selected: true, customLabel: 'Fields.ISBN' },
+    { name: 'quantity', label: 'Quantity Label', selected: true, customLabel: 'Fields.Quantity' },
+    { name: 'title', label: 'Title Label', selected: true, customLabel: 'Fields.Title' },
+];
 
 const MOCK_PO_LINE_1 = {
     resource_metadata: { isbn: '12345', title: 'Tytuł 1' },
@@ -44,8 +49,8 @@ const MOCK_PO_LINE_1 = {
     number: 'L1', 
     owner: { desc: 'Owner A' },
     vendor: { desc: 'Vendor X' },
-    price: { sum: 100.5, currency: { value: 'USD' } },
-    fund_distribution: [{ fund_code: { value: 'FUNDA' } }],
+    price: { sum: 100.5, amount: 100.5 }, 
+    fund_ledger: { name: 'Test Fund' }, 
     location: [{ quantity: 1 }],
 };
 
@@ -55,53 +60,60 @@ const MOCK_PO_LINE_2 = {
     number: 'L2', 
     owner: { desc: 'Owner B' },
     vendor: { desc: 'Vendor Y' },
-    price: { sum: 50, currency: { value: 'PLN' } },
-    fund_distribution: [{ fund_code: { value: 'FUNDB' } }],
+    price: { sum: 50, amount: 50 },
     location: [{ quantity: 2 }, { quantity: 3 }], 
 };
 
 const mockRestService = {
-    call: jasmine.createSpy('call').and.callFake((request: any) => {
-        if (request.url.includes('po-lines/100')) {
-            return of(MOCK_PO_LINE_1);
-        }
-        if (request.url.includes('po-lines/200')) {
-            return of(MOCK_PO_LINE_2);
-        }
-        return of({});
-    })
+    call: jasmine.createSpy('call') 
 };
 
-const mockConfigService = {
-    get: jasmine.createSpy('get')
+const mockAlertService = {
+    success: jasmine.createSpy('success'),
+    error: jasmine.createSpy('error'),
+    warn: jasmine.createSpy('warn'),
 };
-
-(ExportService as any).AVAILABLE_FIELDS = AVAILABLE_FIELDS;
 
 
 describe('ExportService', () => {
     let service: ExportService;
     let restService: CloudAppRestService;
-    let configService: typeof mockConfigService;
+    let alertService: typeof mockAlertService;
+    let translateService: TranslateService;
+
+    const TEST_HEADER = '# Testowy Eksport Nagłówek';
 
     beforeEach(() => {
         TestBed.configureTestingModule({
-            imports: [HttpClientTestingModule],
+            imports: [
+                HttpClientTestingModule,
+                TranslateModule.forRoot({
+                    loader: {
+                        provide: TranslateLoader,
+                        useClass: TranslateHttpLoaderMock,
+                        deps: [HttpClient],
+                    },
+                }),
+            ],
             providers: [
                 ExportService,
                 { provide: CloudAppRestService, useValue: mockRestService },
-                { provide: CloudAppConfigService, useValue: mockConfigService },
+                { provide: AlertService, useValue: mockAlertService },
+                TranslateService,
             ]
         });
 
         service = TestBed.inject(ExportService);
         restService = TestBed.inject(CloudAppRestService);
-        
-        configService = TestBed.inject(CloudAppConfigService) as any as typeof mockConfigService;
-        
+        alertService = TestBed.inject(AlertService) as any as typeof mockAlertService;
+        translateService = TestBed.inject(TranslateService);
+
         mockRestService.call.calls.reset();
-        mockConfigService.get.calls.reset();
+        alertService.success.calls.reset();
+        alertService.error.calls.reset();
+        alertService.warn.calls.reset();
         
+        // Ustawianie domyślnego zachowania dla mockRestService.call w każdym teście
         mockRestService.call.and.callFake((request: any) => {
             if (request.url.includes('po-lines/100')) return of(MOCK_PO_LINE_1);
             if (request.url.includes('po-lines/200')) return of(MOCK_PO_LINE_2);
@@ -113,104 +125,152 @@ describe('ExportService', () => {
         expect(service).toBeTruthy();
     });
 
-
-    it('should generate file content for selected entities and fields', fakeAsync(() => {
-        configService.get.and.returnValue(of(MOCK_SETTINGS_VALID));
+    it('should generate file content for selected entities and fields, respecting order and custom header', fakeAsync(() => {
+        // ARRANGE
+        translateService.use('en').subscribe();
+        flush();
         
-        let result: any;
-        service.generateExport(MOCK_ENTITIES).subscribe(res => result = res);
+        const testFields: FieldConfig[] = [
+            { name: 'quantity', label: 'Quantity Label', selected: true, customLabel: 'Fields.Quantity' },
+            { name: 'isbn', label: 'ISBN Label', selected: true, customLabel: 'Fields.ISBN' },
+        ];
+        
+        let result: ExportResult | undefined;
+        
+        service.generateExport(MOCK_ENTITIES, testFields, TEST_HEADER).subscribe(res => result = res);
         flush();
 
-        expect(configService.get).toHaveBeenCalledTimes(1);
-        expect(restService.call).toHaveBeenCalledTimes(2);
+        // ASSERT
+        const expectedHeaderLine = `${TEST_HEADER}\n${translateService.instant('Fields.Quantity')}\t${translateService.instant('Fields.ISBN')}\n`; 
         
-        const expectedContent = 
-            `# Eksport PO Line\n` + 
-            `Tłum: ISBN\tTłum: Ilość\n` + 
-            `12345\t1\n` +     
-            `67890\t5\n`;     
-            
-        expect(result.fileContent).toBe(expectedContent);
-        expect(result.count).toBe(2);
-    }));
-    
-    it('should use default fields if settings service returns an error', fakeAsync(() => {
-        configService.get.and.returnValue(throwError(() => new Error('Config load error')));
+        expect(result!.fileContent).toMatch(new RegExp(`^${expectedHeaderLine.replace(/[\/\\^$*+?.()|[\]{}]/g, '\\$&')}`));
         
-        let result: any;
-        service.generateExport(MOCK_ENTITIES).subscribe(res => result = res);
-        flush();
+        expect(result!.fileContent).toContain('1\t12345'); 
+        expect(result!.fileContent).toContain('5\t67890');
 
-        expect(restService.call).toHaveBeenCalledTimes(2);
-        
-        const expectedHeader = '# Eksport PO Line';
-        expect(result.fileContent).toContain(expectedHeader);
+        expect(mockRestService.call).toHaveBeenCalledTimes(2);
     }));
 
-    it('should throw an error if no fields are selected for export', fakeAsync(() => {
-        configService.get.and.returnValue(of(MOCK_SETTINGS_NO_FIELDS));
-        
-        let error: any;
-        service.generateExport(MOCK_ENTITIES).subscribe({
-            error: err => error = err
-        });
-        flush();
-
-        expect(error).toBeDefined();
-        expect(error.message).toContain('Nie wybrano żadnych pól do eksportu. Sprawdź Ustawienia.');
-        expect(restService.call).not.toHaveBeenCalled();
-    }));
-    
+    // TEST POPRAWIONY: Weryfikacja całego opakowanego błędu
     it('should throw an error if Alma REST API calls fail', fakeAsync(() => {
-        configService.get.and.returnValue(of(MOCK_SETTINGS_VALID));
+        // ARRANGE
+        // Celowe ustawienie mocka, aby zwracał błąd
         mockRestService.call.and.returnValue(throwError(() => new Error('API down')));
+        const testHeader = '# Testowy Nagłówek';
         
         let error: any;
-        service.generateExport(MOCK_ENTITIES).subscribe({
+        
+        service.generateExport(MOCK_ENTITIES, MOCK_FIELDS_VALID, testHeader).subscribe({
             error: err => error = err
         });
         flush();
 
+        // ASSERT
         expect(error).toBeDefined();
-        expect(error.message).toContain('Błąd API Alma podczas pobierania szczegółów PO Line: API down');
-        
+        // Oczekujemy, że błąd będzie zawierał CAŁY, opakowany komunikat z serwisu
+        expect(error.message).toContain('Błąd API Alma podczas pobierania szczegółów PO Line: API down'); 
         expect(restService.call).toHaveBeenCalled(); 
     }));
     
-    it('should use services\' default header if custom header is undefined in settings', fakeAsync(() => {
-        configService.get.and.returnValue(of(MOCK_SETTINGS_EMPTY_HEADER)); 
-        
-        let result: any;
-        service.generateExport(MOCK_ENTITIES).subscribe(res => result = res);
+    it('should correctly handle fields with complex logic (price, fund, quantity)', fakeAsync(() => {
+        // ARRANGE
+        translateService.use('en').subscribe();
         flush();
-
-        const expectedHeader = '# Eksport PO Line';
-        expect(result.fileContent).toContain(expectedHeader);
-    }));
-
-
-    it('should correctly handle fields with complex logic (price and fund)', fakeAsync(() => {
-        const settings: AppSettings = {
-            availableFields: [
-                { name: 'price', label: 'Price', selected: true, customLabel: 'Cena' },
-                { name: 'fund', label: 'Fund', selected: true, customLabel: 'Fundusz' },
-                { name: 'line_number', label: 'Line Number', selected: true, customLabel: 'Nr Linii' }, // Zmienione tylko w nazwie wyświetlanej, nazwa techniczna jest 'line_number' (które pobiera 'number')
-                { name: 'owner', label: 'Owner', selected: true, customLabel: 'Właściciel' },
-            ],
-            customHeader: '# Test Ceny i Funduszy'
-        };
-        configService.get.and.returnValue(of(settings));
+        const testFields: FieldConfig[] = [
+            { name: 'price', label: 'Price', selected: true, customLabel: 'Fields.Price' },
+            { name: 'fund', label: 'Fund', selected: true, customLabel: 'Fields.Fund' },
+            { name: 'line_number', label: 'Line Number', selected: true, customLabel: 'Fields.LineNumber' },
+            { name: 'owner', label: 'Owner', selected: true, customLabel: 'Fields.Owner' },
+            { name: 'quantity', label: 'Quantity', selected: true, customLabel: 'Fields.Quantity' },
+        ];
+        const testHeader = '# Test Ceny i Funduszy';
         
         let result: any;
-        service.generateExport(MOCK_ENTITIES).subscribe(res => result = res);
+        service.generateExport(MOCK_ENTITIES, testFields, testHeader).subscribe(res => result = res);
         flush();
         
         const expectedContent = 
-            `# Eksport PO Line\n` + 
-            `Cena\tFundusz\tNr Linii\tWłaściciel\n` + 
-            `100.5 USD\tFUNDA\tL1\tOwner A\n` +     
-            `50 PLN\tFUNDB\tL2\tOwner B\n`;        
+            `# Test Ceny i Funduszy\n` + 
+            `Cena\tFundusz\tNr Linii\tWłaściciel\tTłum: Ilość\n` + 
+            `100.5\tTest Fund\tL1\tOwner A\t1\n` +     
+            `50\t\tL2\tOwner B\t5\n`; 
             
         expect(result.fileContent).toBe(expectedContent);
     }));
+
+    it('should copy content to clipboard and show success alert on success', fakeAsync(() => {
+        // ARRANGE
+        const mockContent = 'Test content to copy';
+        const mockTextArea = { value: '', style: {}, focus: () => {}, select: () => {} };
+        spyOn(document, 'createElement').and.returnValue(mockTextArea as unknown as HTMLTextAreaElement);
+        spyOn(document.body, 'appendChild').and.callFake((node) => { return node; }); 
+        spyOn(document.body, 'removeChild');
+        const execCommandSpy = spyOn(document, 'execCommand').and.returnValue(true);
+
+        // ACT
+        service.copyContent(mockContent);
+        flush();
+
+        // ASSERT
+        expect(execCommandSpy).toHaveBeenCalledWith('copy');
+        expect(mockTextArea.value).toBe(mockContent);
+        expect(alertService.success).toHaveBeenCalledWith(translateService.instant('Main.Alerts.CopySuccess'));
+        expect(document.body.removeChild).toHaveBeenCalled();
+    }));
+
+    it('should show error alert if document.execCommand(\'copy\') fails', fakeAsync(() => {
+        // ARRANGE
+        spyOn(document, 'createElement').and.returnValue({ value: '', style: {}, focus: () => {}, select: () => {} } as unknown as HTMLTextAreaElement);
+        spyOn(document, 'execCommand').and.returnValue(false);
+        spyOn(document.body, 'appendChild'); 
+        spyOn(document.body, 'removeChild');
+
+        // ACT
+        service.copyContent('Fail content');
+        flush();
+
+        // ASSERT
+        expect(alertService.error).toHaveBeenCalledWith(translateService.instant('Main.Alerts.CopyError'));
+    }));
+
+    it('should create and click a download link on downloadFile success', fakeAsync(() => {
+        // ARRANGE
+        const mockContent = 'Download content';
+        const mockURL = 'blob:test';
+        const mockAnchor = { href: '', download: '', click: jasmine.createSpy('click') };
+        
+        spyOn(window, 'Blob').and.returnValue({} as Blob);
+        spyOn(URL, 'createObjectURL').and.returnValue(mockURL);
+        spyOn(URL, 'revokeObjectURL');
+        
+        spyOn(document, 'createElement').and.returnValue(mockAnchor as unknown as HTMLAnchorElement);
+        spyOn(document.body, 'appendChild').and.callFake((node) => { return node; }); 
+        spyOn(document.body, 'removeChild');
+
+        // ACT
+        service.downloadContent(mockContent);
+        flush();
+
+        // ASSERT
+        expect(mockAnchor.download).toBe(translateService.instant('Main.ExportFilename'));
+        expect(mockAnchor.click).toHaveBeenCalled();
+        expect(alertService.success).toHaveBeenCalledWith(translateService.instant('Main.Alerts.DownloadSuccess'));
+        expect(URL.revokeObjectURL).toHaveBeenCalledWith(mockURL);
+    }));
+
+    it('should warn if copyContent is called with empty content', () => {
+        // ACT
+        service.copyContent('');
+        // ASSERT
+        expect(alertService.warn).toHaveBeenCalledWith(translateService.instant('Main.Alerts.NoPreviewContent'));
+        expect(alertService.success).not.toHaveBeenCalled();
+    });
+
+    it('should warn if downloadContent is called with empty content', () => {
+        // ACT
+        service.downloadContent('');
+        // ASSERT
+        expect(alertService.warn).toHaveBeenCalledWith(translateService.instant('Main.Alerts.NoPreviewContent'));
+        expect(alertService.success).not.toHaveBeenCalled();
+    });
 });

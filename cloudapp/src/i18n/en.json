@@ -3,7 +3,7 @@
     "Author": "Author",
     "Fund": "Fund",
     "ISBN": "ISBN",
-    "LineNumber": "Line Number",
+    "LineNumber": "PO Line Number",
     "Owner": "Owner",
     "PONumber": "PO Number",
     "Price": "Price",
@@ -37,7 +37,7 @@
     },
     "ExportFilename": "po_line_export.txt",
     "NoEntities": {
-      "Description": "To begin, go to the PO Line List in Alma. This app will automatically display the visible items, which you can select and export.",
+      "Description": "To begin, navigate to the PO Line List in Alma. This app will automatically display the visible items, which you can select and export.",
       "Title": "Welcome to the PO Line Export CloudApp"
     },
     "SelectEntities": {
@@ -52,18 +52,18 @@
       "SaveSuccess": "Settings saved successfully!"
     },
     "Buttons": {
-      "Reset": "Reset Settings",
+      "Reset": "Reset",
       "Save": "Save"
     },
     "CustomHeader": {
-      "Label": "Custom File Header",
+      "Label": "Customize File Header",
       "Placeholder": "Enter the text that will appear at the top of the exported file."
     },
     "Fields": {
       "CustomizeLabel": "Customize Column Name",
       "ToggleAll": "Check/Uncheck All"
     },
-    "Instruction": "Select the fields you want to export. Click on a field name to change the column name, and drag to reorder. In the text field below, you can customize the file header.",
+    "Instruction": "Select the fields you want to export. Click on a field to change the column name, and drag to reorder. In the text field below, you can customize the file header.",
     "Title": "Settings"
   },
   "TopMenu": {

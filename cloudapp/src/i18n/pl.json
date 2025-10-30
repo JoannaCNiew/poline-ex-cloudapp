@@ -3,7 +3,7 @@
     "Author": "Autor",
     "Fund": "Budżet",
     "ISBN": "ISBN",
-    "LineNumber": "Numer linii",
+    "LineNumber": "Numer pozycji zamówienia",
     "Owner": "Właściciel pozycji zamówienia",
     "PONumber": "Numer zamówienia",
     "Price": "Cena",
@@ -14,9 +14,9 @@
   "Main": {
     "Alerts": {
       "CopyError": "Nie udało się skopiować zawartości.",
-      "CopyPrepError": "Błąd podczas przygotowania treści do skopiowania: ",
+      "CopyPrepError": "Błąd podczas przygotowywania treści do skopiowania: ",
       "CopySuccess": "Skopiowano do schowka.",
-      "DownloadError": "Błąd podczas przygotowania pliku do pobrania: ",
+      "DownloadError": "Błąd podczas przygotowywania pliku do pobrania: ",
       "DownloadSuccess": "Rozpoczęto pobieranie pliku.",
       "NoFieldsSelected": "Nie wybrano żadnych pól do eksportu. Sprawdź Ustawienia.",
       "PreviewError": "Błąd podczas generowania podglądu: ",
@@ -35,9 +35,9 @@
       "TitleOptions": "Opcje eksportu",
       "TitleSelect": "Wybierz linie zamówienia, aby zobaczyć opcje eksportu."
     },
-    "ExportFilename": "eksport_linii_zamowien.txt",
+    "ExportFilename": "eksport_linii_zamowienia.txt",
     "NoEntities": {
-      "Description": "Aby rozpocząć, przejdź do Listy linii zamówień w Almie. Aplikacja automatycznie wyświetli widoczne pozycje, które możesz wybrać i wyeksportować.",
+      "Description": "Aby rozpocząć, przejdź do Listy pozycji zamówienia w Almie. Aplikacja automatycznie wyświetli widoczne pozycje, które można zaznaczyć i wyeksportować.",
       "Title": "Witaj w aplikacji PO Line Export"
     },
     "SelectEntities": {
@@ -56,14 +56,14 @@
       "Save": "Zapisz"
     },
     "CustomHeader": {
-      "Label": "Niestandardowy nagłówek pliku",
+      "Label": "Zmień nazwę nagłówka",
       "Placeholder": "Wprowadź tekst, który pojawi się na górze eksportowanego pliku."
     },
     "Fields": {
-      "CustomizeLabel": "Dostosuj nazwę kolumny",
+      "CustomizeLabel": "Zmień nazwę kolumny",
       "ToggleAll": "Zaznacz/Odznacz wszystko"
     },
-    "Instruction": "Wybierz pola, które chcesz wyeksportować. Kliknij nazwę pola, aby zmienić nazwę kolumny, i przeciągnij, aby zmienić kolejność. W polu tekstowym poniżej możesz dostosować nagłówek pliku.",
+    "Instruction": "Wybierz pola, które chcesz wyeksportować. Kliknij w pole, aby zmienić nazwę kolumny, i przeciągnij, aby zmienić kolejność. W polu tekstowym poniżej możesz zmienić nagłówek pliku.",
     "Title": "Ustawienia"
   },
   "TopMenu": {
