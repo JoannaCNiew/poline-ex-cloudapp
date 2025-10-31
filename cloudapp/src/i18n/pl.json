@@ -37,7 +37,7 @@
     },
     "ExportFilename": "eksport_linii_zamowienia.txt",
     "NoEntities": {
-      "Description": "Aby rozpocząć, przejdź do Listy pozycji zamówienia w Almie. Aplikacja automatycznie wyświetli widoczne pozycje, które można zaznaczyć i wyeksportować.",
+      "Description": "Aby rozpocząć, przejdź do Listy linii zamówienia w Almie. Aplikacja automatycznie wyświetli widoczne pozycje, które można zaznaczyć i wyeksportować.",
       "Title": "Witaj w aplikacji PO Line Export"
     },
     "SelectEntities": {
