@@ -19,6 +19,7 @@
       "DownloadError": "Błąd podczas przygotowywania pliku do pobrania: ",
       "DownloadSuccess": "Rozpoczęto pobieranie pliku.",
       "NoFieldsSelected": "Nie wybrano żadnych pól do eksportu. Sprawdź Ustawienia.",
+      "NoPreviewContent": "Brak treści do wyświetlenia w podglądzie.",
       "PreviewError": "Błąd podczas generowania podglądu: ",
       "PreviewSuccess": "Wygenerowano podgląd.",
       "SelectOne": "Wybierz przynajmniej jedną linię zamówienia."

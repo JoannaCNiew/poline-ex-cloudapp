@@ -19,6 +19,7 @@
       "DownloadError": "Error preparing file for download: ",
       "DownloadSuccess": "File download started.",
       "NoFieldsSelected": "No fields are selected for export. Please check the Settings.",
+      "NoPreviewContent": "No content available for preview.",
       "PreviewError": "Error generating preview: ",
       "PreviewSuccess": "Preview generated successfully.",
       "SelectOne": "Select at least one PO line to process."
