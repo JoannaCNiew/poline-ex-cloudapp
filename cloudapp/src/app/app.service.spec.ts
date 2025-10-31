@@ -2,8 +2,6 @@ import { TestBed } from '@angular/core/testing';
 import { AppService } from './app.service';
 import { InitService } from '@exlibris/exl-cloudapp-angular-lib';
 
-// Serwis InitService jest wstrzykiwany, ale nieużywany,
-// więc wystarczy prosty mock.
 const mockInitService = jasmine.createSpyObj('InitService', ['doSomething']);
 
 describe('AppService', () => {
@@ -33,10 +31,8 @@ describe('AppService', () => {
   it('should set and get a new title', (done: DoneFn) => {
     const newTitle = 'New Test Title';
     
-    // Ustawiamy nowy tytuł
     service.setTitle(newTitle);
 
-    // Subskrybujemy, aby sprawdzić, czy nowa wartość została wyemitowana
     service.getTitle().subscribe(title => {
       expect(title).toBe(newTitle);
       done();
@@ -48,9 +44,8 @@ describe('AppService', () => {
     const secondTitle = 'Second';
 
     service.setTitle(firstTitle);
-    service.setTitle(secondTitle); // Ustawiamy tytuł *przed* subskrypcją
+    service.setTitle(secondTitle);
 
-    // Nowy subskrybent powinien natychmiast otrzymać ostatnią wartość ('Second')
     service.getTitle().subscribe(title => {
       expect(title).toBe(secondTitle);
       done();

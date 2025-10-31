@@ -53,43 +53,28 @@ export class ExportService {
     }
     
     
-    // --- POCZĄTEK REFAKTOROWANEJ FUNKCJI ---
-    /**
-     * Zmieniono na funkcję asynchroniczną (async) używającą nowego API schowka.
-     * Zwraca Promise, aby komponent wiedział, kiedy operacja się zakończyła.
-     */
     async copyContent(content: string): Promise<void> {
         if (!content) {
             this.alert.warn(this.translate.instant('Main.Alerts.NoPreviewContent'));
-            // Odrzuć promise, aby komponent (main) mógł obsłużyć błąd
             return Promise.reject(new Error('No content to copy.'));
         }
 
-        // Nowoczesne API schowka (działa asynchronicznie)
         if (!navigator.clipboard || !navigator.clipboard.writeText) {
             console.error('Clipboard API not available. Falling back to execCommand.');
-            // Fallback do starej, synchronicznej metody, jeśli API jest niedostępne
             return this.copyContentLegacy(content);
         }
 
         try {
-            // To API jest asynchroniczne i zwraca Promise
             await navigator.clipboard.writeText(content);
             this.alert.success(this.translate.instant('Main.Alerts.CopySuccess'));
 
         } catch (err) {
             console.error('Async copy failed: ', err);
             this.alert.error(this.translate.instant('Main.Alerts.CopyError'));
-            // Przekaż błąd dalej, aby 'main.component' mógł go obsłużyć
             throw err; 
         }
     }
 
-    /**
-     * Fallback copy method using deprecated execCommand.
-     * Zachowane dla kompatybilności ze starszymi przeglądarkami.
-     * Zwraca Promise dla spójności API.
-     */
     private copyContentLegacy(content: string): Promise<void> {
       return new Promise((resolve, reject) => {
         const textArea = document.createElement("textarea");
@@ -116,8 +101,6 @@ export class ExportService {
         document.body.removeChild(textArea);
       });
     }
-
-    // --- KONIEC REFAKTOROWANEJ FUNKCJI ---
 
     downloadContent(content: string) {
         if (!content) {

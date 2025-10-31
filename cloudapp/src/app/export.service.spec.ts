@@ -12,7 +12,6 @@ import { of, throwError } from 'rxjs';
 import { ExportService } from './export.service';
 import { FieldConfig } from './models/settings';
 
-// --- MOCKI DANYCH (takie same jak u Ciebie) ---
 
 const MOCK_ENTITIES: Entity[] = [
   { id: '1', link: 'po_line/1', type: EntityType.PO_LINE, description: 'PO 1' },
@@ -44,7 +43,6 @@ const MOCK_POLINE_RESPONSE_2 = {
 
 const MOCK_CUSTOM_HEADER = '# Mój Nagłówek';
 
-// --- BLOK TESTOWY ---
 
 describe('ExportService', () => {
   let service: ExportService;
@@ -52,26 +50,21 @@ describe('ExportService', () => {
   let mockAlertService: jasmine.SpyObj<AlertService>;
   let mockTranslateService: jasmine.SpyObj<TranslateService>;
 
-  // ★★★ MOCKI PRZEGLĄDARKI ★★★
   let mockClipboard: { writeText: jasmine.Spy };
-  let originalClipboard: any; // Do przechowania oryginału
+  let originalClipboard: any; 
   
-  // ★★★ POPRAWIONE MOCKI ★★★
-  let mockAnchor: any; // Użyjemy 'any' dla prostoty
-  let mockTextArea: any; // Użyjemy 'any' dla prostoty
+  let mockAnchor: any; 
+  let mockTextArea: any; 
 
-  // Spye dla document
   let appendChildSpy: jasmine.Spy;
   let removeChildSpy: jasmine.Spy;
   let createElementSpy: jasmine.Spy;
 
   beforeEach(() => {
-    // 1. Mocki standardowych serwisów
     mockRestService = jasmine.createSpyObj('CloudAppRestService', ['call']);
     mockAlertService = jasmine.createSpyObj('AlertService', ['success', 'warn', 'error']);
     mockTranslateService = jasmine.createSpyObj('TranslateService', ['instant']);
 
-    // 2. Mockowanie 'navigator.clipboard' (API asynchroniczne)
     mockClipboard = { writeText: jasmine.createSpy('writeText').and.resolveTo(undefined) };
     originalClipboard = (navigator as any).clipboard;
     Object.defineProperty(navigator, 'clipboard', {
@@ -80,9 +73,6 @@ describe('ExportService', () => {
       configurable: true
     });
 
-    // 3. ★★★ POPRAWIONE MOCKOWANIE ELEMENTÓW ★★★
-    // Tworzymy proste obiekty, które mają prawdziwe właściwości (href, download, value)
-    // i szpiegujemy tylko metody (click, focus, select)
     
     mockAnchor = {
       href: '',
@@ -92,12 +82,11 @@ describe('ExportService', () => {
     
     mockTextArea = {
       value: '',
-      style: { position: '', opacity: '' }, // Wciąż potrzebne dla kompilatora
+      style: { position: '', opacity: '' }, 
       focus: jasmine.createSpy('focus'),
       select: jasmine.createSpy('select')
     };
 
-    // Szpiegujemy 'createElement' i zwracamy nasze nowe mocki
     createElementSpy = spyOn(document, 'createElement').and.callFake((tagName: string) => {
       if (tagName.toLowerCase() === 'a') {
         return mockAnchor;
@@ -105,19 +94,15 @@ describe('ExportService', () => {
       if (tagName.toLowerCase() === 'textarea') {
         return mockTextArea;
       }
-      // Poniższy kod jest ważny jako fallback
       return document.createElement(tagName); 
     });
 
-    // Mockowanie 'document.body' (bez zmian, było poprawne)
     appendChildSpy = spyOn(document.body, 'appendChild').and.callFake((node) => node);
     removeChildSpy = spyOn(document.body, 'removeChild').and.callFake((node) => node);
 
-    // 4. Mockowanie URL
     spyOn(URL, 'createObjectURL').and.returnValue('blob:http://fake-url');
     spyOn(URL, 'revokeObjectURL');
 
-    // 5. Konfiguracja TestBed
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
       providers: [
@@ -130,23 +115,19 @@ describe('ExportService', () => {
 
     service = TestBed.inject(ExportService);
 
-    // Domyślne tłumaczenie
     mockTranslateService.instant.and.callFake(key => `T:${key}`);
   });
 
   afterEach(() => {
-    // Przywracanie oryginałów
     Object.defineProperty(navigator, 'clipboard', {
       value: originalClipboard,
       writable: true,
       configurable: true
     });
-    // Resetowanie spy'ów
     appendChildSpy.and.callThrough();
     removeChildSpy.and.callThrough();
     createElementSpy.and.callThrough();
 
-    // Resetowanie wywołań mocków serwisów
     mockRestService.call.calls.reset();
     mockAlertService.success.calls.reset();
     mockAlertService.warn.calls.reset();
@@ -158,7 +139,6 @@ describe('ExportService', () => {
     expect(service).toBeTruthy();
   });
 
-  // --- Test 'generateExport' (bez zmian) ---
   describe('generateExport', () => {
     
     beforeEach(() => {
@@ -175,7 +155,6 @@ describe('ExportService', () => {
       service.generateExport(MOCK_ENTITIES, MOCK_FIELDS, MOCK_CUSTOM_HEADER).subscribe(result => {
         
         expect(mockRestService.call).toHaveBeenCalledTimes(2);
-        // ... (reszta asercji bez zmian) ...
         const expectedHeaders = 'Nr Zlecenia\tTytuł\tIlość\tFundusz';
         const expectedRow1 = 'PO-123\tKsiążka 1\t5\tFUND_A; FUND_B';
         const expectedRow2 = 'PO-456\tKsiążka 2\t1\tFUND_C';
@@ -193,7 +172,6 @@ describe('ExportService', () => {
 
   });
 
-  // --- Test 'copyContent' (bez zmian) ---
   describe('copyContent (async)', () => {
 
     it('should call navigator.clipboard.writeText and alert.success when content is provided', async () => {
@@ -215,7 +193,7 @@ describe('ExportService', () => {
 
     it('should call alert.error and throw when clipboard.writeText fails', async () => {
       const error = new Error('Clipboard failed');
-      mockClipboard.writeText.and.rejectWith(error); // Symulujemy błąd API
+      mockClipboard.writeText.and.rejectWith(error); 
 
       await expectAsync(service.copyContent('Test content')).toBeRejectedWith(error);
       
@@ -234,8 +212,6 @@ describe('ExportService', () => {
       expect(createElementSpy).toHaveBeenCalledWith('textarea');
       expect(appendChildSpy).toHaveBeenCalledWith(mockTextArea);
       
-      // ★★★ NOWA ASERCJA ★★★
-      // Sprawdzamy, czy 'value' zostało poprawnie ustawione
       expect(mockTextArea.value).toBe('Legacy Test'); 
 
       expect(mockTextArea.focus).toHaveBeenCalled();
@@ -247,7 +223,6 @@ describe('ExportService', () => {
     });
   });
 
-  // --- Test 'downloadContent' (bez zmian, ale teraz powinien przejść) ---
   describe('downloadContent', () => {
 
     it('should call alert.warn if content is empty', () => {
@@ -264,7 +239,6 @@ describe('ExportService', () => {
       
       expect(createElementSpy).toHaveBeenCalledWith('a');
       
-      // ★★★ ASERCJE, KTÓRE TERAZ POWINNY ZADZIAŁAĆ ★★★
       expect(mockAnchor.href).toBe('blob:http://fake-url');
       expect(mockAnchor.download).toBe('T:Main.ExportFilename');
       

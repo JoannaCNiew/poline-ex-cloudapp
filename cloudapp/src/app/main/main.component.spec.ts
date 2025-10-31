@@ -14,19 +14,14 @@ import { DomService } from './dom.service';
 import { ValidationService } from './validation.service';
 import { ProcessedSettings, AppSettings } from '../models/settings';
 
-// --- MOCKI ---
-
-// 1. Mocki dla standardowych serwisów Ex Libris
 const mockRestService = jasmine.createSpyObj('CloudAppRestService', ['call']);
 const mockAlertService = jasmine.createSpyObj('AlertService', ['success', 'warn', 'error']);
 
-// 2. Mock dla CloudAppEventsService (musi zwracać Observable)
 const entitiesSubject = new Subject<Entity[]>();
 const mockEventsService = {
   entities$: entitiesSubject.asObservable(),
 };
 
-// 3. Mock dla TranslateService (złożony)
 const langChangeSubject = new Subject<LangChangeEvent>();
 const mockTranslateService = {
   get: jasmine.createSpy('get').and.returnValue(of({
@@ -44,27 +39,23 @@ const mockTranslateService = {
   getParsedResult: jasmine.createSpy('getParsedResult').and.returnValue(''),
 };
 
-// 4. Mock dla SettingsService (zwraca domyślne puste ustawienia)
 const MOCK_SETTINGS: ProcessedSettings = {
   settings: { availableFields: [], customHeader: '# Test Header' } as AppSettings,
-  exportFields: [{ name: 'field1', label: 'Field 1', selected: true, customLabel: 'Custom 1' }] // Musi mieć jakieś pola
+  exportFields: [{ name: 'field1', label: 'Field 1', selected: true, customLabel: 'Custom 1' }] 
 };
 const mockSettingsService = {
   getSettings: jasmine.createSpy('getSettings').and.returnValue(of(MOCK_SETTINGS))
 };
 
-// 5. Mocki dla Twoich własnych serwisów
 const mockExportService = jasmine.createSpyObj('ExportService', ['generateExport', 'copyContent', 'downloadContent']);
 const mockDomService = jasmine.createSpyObj('DomService', ['updateSelectAllCheckboxLabel']);
 const mockValidationService = jasmine.createSpyObj('ValidationService', ['validateExportParameters']);
 
-// 6. Mocki dla zależności Angulara
 const mockElementRef = {
-  nativeElement: document.createElement('div') // Fałszywy element DOM
+  nativeElement: document.createElement('div')
 };
 const mockCd = jasmine.createSpyObj('ChangeDetectorRef', ['markForCheck']);
 
-// 7. Mock dla @ViewChild(SelectEntitiesComponent)
 @Component({
   selector: 'eca-select-entities',
   template: ''
@@ -73,14 +64,12 @@ class MockSelectEntitiesComponent {
   clear = jasmine.createSpy('clear');
 }
 
-// 8. Mock dla TranslateLoader (używany w Settings)
 class FakeTranslateLoader implements TranslateLoader {
   getTranslation(lang: string): Observable<any> {
     return of({});
   }
 }
 
-// 9. Mockowe dane
 const MOCK_ENTITIES: Entity[] = [
   { id: '1', link: 'link/1', type: EntityType.PO_LINE, description: 'PO 1' }
 ];
@@ -90,13 +79,11 @@ const MOCK_EXPORT_RESULT: ExportResult = {
   count: 1
 };
 
-// --- GŁÓWNY BLOK TESTOWY ---
 
 describe('MainComponent', () => {
   let component: MainComponent;
   let fixture: ComponentFixture<MainComponent>;
 
-  // Referencje do mocków, abyśmy mogli je kontrolować
   let alertSpy: jasmine.SpyObj<AlertService>;
   let domServiceSpy: jasmine.SpyObj<DomService>;
   let settingsServiceSpy: jasmine.SpyObj<SettingsService>;
@@ -115,7 +102,6 @@ describe('MainComponent', () => {
         })
       ],
       providers: [
-        // Zapewniamy globalne mocki
         { provide: CloudAppRestService, useValue: mockRestService },
         { provide: CloudAppEventsService, useValue: mockEventsService },
         { provide: AlertService, useValue: mockAlertService },
@@ -128,7 +114,6 @@ describe('MainComponent', () => {
         { provide: ValidationService, useValue: mockValidationService }
       ]
     })
-    // Nadpisujemy 'providers' komponentu, aby zmusić go do użycia naszych mocków
     .overrideComponent(MainComponent, {
       set: {
         providers: [
@@ -144,7 +129,6 @@ describe('MainComponent', () => {
     fixture = TestBed.createComponent(MainComponent);
     component = fixture.componentInstance;
     
-    // Pobieramy referencje do wstrzykniętych mocków
     alertSpy = TestBed.inject(AlertService) as jasmine.SpyObj<AlertService>;
     domServiceSpy = TestBed.inject(DomService) as jasmine.SpyObj<DomService>;
     settingsServiceSpy = TestBed.inject(SettingsService) as jasmine.SpyObj<SettingsService>;
@@ -152,7 +136,6 @@ describe('MainComponent', () => {
     validationServiceSpy = TestBed.inject(ValidationService) as jasmine.SpyObj<ValidationService>;
     translateSpy = TestBed.inject(TranslateService) as jasmine.SpyObj<TranslateService>;
     
-    // Resetujemy wywołania przed każdym testem
     alertSpy.success.calls.reset();
     alertSpy.warn.calls.reset();
     alertSpy.error.calls.reset();
@@ -165,17 +148,14 @@ describe('MainComponent', () => {
     translateSpy.get.calls.reset();
     translateSpy.instant.calls.reset();
     
-    // Domyślne mocki dla funkcji, które mogą być wywoływane
-    validationServiceSpy.validateExportParameters.and.returnValue(null); // Domyślnie walidacja przechodzi
+    validationServiceSpy.validateExportParameters.and.returnValue(null); 
     exportServiceSpy.generateExport.and.returnValue(of(MOCK_EXPORT_RESULT));
-    exportServiceSpy.copyContent.and.returnValue(Promise.resolve()); // Zwraca rozwiązany Promise
+    exportServiceSpy.copyContent.and.returnValue(Promise.resolve()); 
     
-    fixture.detectChanges(); // To uruchamia ngOnInit. @ViewChild jest tu ustawiane na 'undefined' przez Angulara
-    tick(500); // Przeskakujemy 'setTimeout' i 'async' w ngOnInit
+    fixture.detectChanges(); 
+    tick(500); 
     fixture.detectChanges();
     
-    // ★★★ POPRAWKA BŁĘDU #2 ★★★
-    // Ręcznie przypisujemy @ViewChild *PO* `detectChanges`, aby nadpisać 'undefined'
     component.selectEntities = new MockSelectEntitiesComponent() as any;
   }));
 
@@ -188,27 +168,24 @@ describe('MainComponent', () => {
   });
 
   it('should react to entity changes', fakeAsync(() => {
-    // Ustawiamy jakiś stan początkowy
     component.selectedEntities = MOCK_ENTITIES;
     component.previewContent = 'stary podgląd';
 
-    // Symulujemy przyjście nowych encji
     entitiesSubject.next(MOCK_ENTITIES);
-    tick(500); // Czekamy na 'setTimeout' w subskrypcji
+    tick(500); 
 
     expect(component.loading).toBe(false);
     expect(component.visibleEntities).toBe(MOCK_ENTITIES);
-    expect(component.selectedEntities).toEqual([]); // Powinno być wyczyszczone
-    expect(component.previewContent).toBeNull(); // Powinno być wyczyszczone
+    expect(component.selectedEntities).toEqual([]); 
+    expect(component.previewContent).toBeNull(); 
     expect(domServiceSpy.updateSelectAllCheckboxLabel).toHaveBeenCalled();
   }));
 
   it('should react to language changes', fakeAsync(() => {
-    // Symulujemy zmianę języka
     langChangeSubject.next({ lang: 'fr', translations: {} });
-    tick(500); // Czekamy na 'setTimeout' i 'loadTranslations'
+    tick(500); 
 
-    expect(translateSpy.get).toHaveBeenCalled(); // loadTranslations zostało wywołane
+    expect(translateSpy.get).toHaveBeenCalled(); 
     expect(domServiceSpy.updateSelectAllCheckboxLabel).toHaveBeenCalled();
   }));
 
@@ -216,12 +193,10 @@ describe('MainComponent', () => {
     component.previewContent = 'jakiś tekst';
     component.clearSelection();
 
-    // Sprawdzamy, czy mock @ViewChild został wywołany
     expect(component.selectEntities.clear).toHaveBeenCalled();
     expect(component.previewContent).toBeNull();
   });
 
-  // --- Testy dla `onGenerateExport` ---
   describe('onGenerateExport', () => {
     
     it('should show warn alert if validation fails', () => {
@@ -235,12 +210,10 @@ describe('MainComponent', () => {
     });
 
     it('should call exportService, show preview, and show success on valid export', fakeAsync(() => {
-      component.selectedEntities = MOCK_ENTITIES; // Upewniamy się, że są dane
+      component.selectedEntities = MOCK_ENTITIES; 
       
       component.onGenerateExport();
       
-      // ★★★ POPRAWKA BŁĘDU #1 ★★★
-      // Usunięto niestabilne sprawdzenie `expect(component.loading).toBe(true);`
       
       expect(exportServiceSpy.generateExport).toHaveBeenCalledWith(
         component.selectedEntities, 
@@ -248,11 +221,11 @@ describe('MainComponent', () => {
         MOCK_SETTINGS.settings.customHeader 
       );
 
-      tick(); // Czekamy na zakończenie Observable
+      tick(); 
 
       expect(component.previewContent).toBe(MOCK_EXPORT_RESULT.fileContent);
       expect(alertSpy.success).toHaveBeenCalledWith('T:Main.Alerts.PreviewSuccess');
-      expect(component.loading).toBe(false); // Sprawdzamy stan końcowy
+      expect(component.loading).toBe(false); 
     }));
 
     it('should show error alert if export fails', fakeAsync(() => {
@@ -261,7 +234,7 @@ describe('MainComponent', () => {
       component.selectedEntities = MOCK_ENTITIES;
       
       component.onGenerateExport();
-      tick(); // Czekamy na błąd
+      tick(); 
 
       expect(alertSpy.error).toHaveBeenCalledWith('T:Main.Alerts.PreviewError: Test export error');
       expect(component.previewContent).toBeNull();
@@ -269,14 +242,13 @@ describe('MainComponent', () => {
     }));
   });
 
-  // --- Testy dla `copyToClipboard` ---
   describe('copyToClipboard', () => {
     
     it('should use existing preview content if available', fakeAsync(() => {
       component.previewContent = 'Istniejący podgląd';
       
       component.copyToClipboard();
-      tick(); // Czekamy na rozwiązanie Promise z copyContent
+      tick(); 
 
       expect(exportServiceSpy.copyContent).toHaveBeenCalledWith('Istniejący podgląd');
       expect(exportServiceSpy.generateExport).not.toHaveBeenCalled();
@@ -287,7 +259,7 @@ describe('MainComponent', () => {
       component.selectedEntities = MOCK_ENTITIES;
 
       component.copyToClipboard();
-      tick(); // Czekamy na subskrypcję i Promise
+      tick(); 
 
       expect(exportServiceSpy.generateExport).toHaveBeenCalled();
       expect(exportServiceSpy.copyContent).toHaveBeenCalledWith(MOCK_EXPORT_RESULT.fileContent);
@@ -306,7 +278,6 @@ describe('MainComponent', () => {
     }));
   });
 
-  // --- Testy dla `downloadFile` ---
   describe('downloadFile', () => {
 
     it('should use existing preview content if available', () => {
@@ -323,7 +294,7 @@ describe('MainComponent', () => {
       component.selectedEntities = MOCK_ENTITIES;
 
       component.downloadFile();
-      tick(); // Czekamy na subskrypcję
+      tick(); 
 
       expect(exportServiceSpy.generateExport).toHaveBeenCalled();
       expect(exportServiceSpy.downloadContent).toHaveBeenCalledWith(MOCK_EXPORT_RESULT.fileContent);

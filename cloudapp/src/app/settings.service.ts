@@ -21,20 +21,13 @@ export class SettingsService {
   getSettings(): Observable<ProcessedSettings> {
     
     return this.cloudSettingsService.get().pipe(
-      // Poprawka: Dodano | null dla lepszego typowania, gdy .get() zwraca puste ustawienia
       map((settings: AppSettings | null) => {
         
-        // --- POCZĄTEK POPRAWIONEJ LOGIKI ---
-        // Ta logika naprawia błąd wykryty przez test
-
-        // 1. Ustal bazowe ustawienia: użyj załadowanych (jeśli istnieją) lub domyślnych
-        // Poprawka: Sprawdzamy, czy 'settings' istnieją i nie są pustym obiektem
         const loadedSettings = (settings && Object.keys(settings).length > 0)
-            ? { ...settings } // Użyj kopii załadowanych ustawień
-            : { ...DEFAULT_SETTINGS }; // Lub domyślnych, jeśli nic nie ma
+            ? { ...settings } 
+            : { ...DEFAULT_SETTINGS }; 
 
-        // 2. Zastosuj domyślne wartości dla *poszczególnych* brakujących pól
-        // Ta logika jest teraz poprawnie stosowana do 'loadedSettings'
+       
         if (!loadedSettings.customHeader) {
           loadedSettings.customHeader = DEFAULT_SETTINGS.customHeader;
         }
@@ -43,7 +36,6 @@ export class SettingsService {
             loadedSettings.availableFields = [...DEFAULT_SETTINGS.availableFields];
         }
         
-        // --- KONIEC POPRAWIONEJ LOGIKI ---
 
         const exportFields = loadedSettings.availableFields.filter((field: FieldConfig) => field.selected);
 

@@ -144,7 +144,6 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
     this.previewContent = null;  
   }
 
-  // Funkcja 'Podgląd' - bez zmian
     onGenerateExport() {
     this.previewContent = null;
     
@@ -178,19 +177,10 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  // --- POCZĄTEK REFAKTOROWANYCH FUNKCJI ---
-
-  /**
-   * Kopiuje zawartość do schowka.
-   * Jeśli podgląd był już generowany, używa go.
-   * Jeśli nie, generuje eksport "w locie" i kopiuje wynik.
-   * Używa 'async' aby obsłużyć asynchroniczne API schowka.
-   */
+ 
   async copyToClipboard() {
-    // 1. Jeśli podgląd istnieje, użyj go (szybka ścieżka)
     if (this.previewContent) {
       try {
-        // 'await' jest potrzebne, ponieważ exportService.copyContent jest teraz async
         await this.exportService.copyContent(this.previewContent);
       } catch (e) {
         console.error('Error copying cached content', e);
@@ -198,7 +188,6 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
     
-    // 2. Jeśli nie ma podglądu, waliduj parametry nowego eksportu
     const errorKey = this.validationService.validateExportParameters(
       this.selectedEntities,
       this.exportFields,
@@ -210,7 +199,6 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    // 3. Generuj eksport i kopiuj (ścieżka asynchroniczna)
     this.loading = true; 
 
     this.exportService.generateExport(
@@ -222,7 +210,6 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
     ).subscribe({
       next: async (result: ExportResult) => { 
         try {
-          // Użyj 'await', ponieważ 'copyContent' jest teraz asynchroniczne
           await this.exportService.copyContent(result.fileContent);
         } catch (e) {
           console.error('Error copying generated content', e);
@@ -234,19 +221,13 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
   
-  /**
-   * Pobiera plik.
-   * Jeśli podgląd był już generowany, używa go.
-   * Jeśli nie, generuje eksport "w locie" i pobiera wynik.
-   */
+  
   downloadFile() {
-    // 1. Jeśli podgląd istnieje, użyj go (szybka ścieżka)
     if (this.previewContent) {
       this.exportService.downloadContent(this.previewContent!);
       return;
     }
     
-    // 2. Jeśli nie ma podglądu, waliduj parametry nowego eksportu
     const errorKey = this.validationService.validateExportParameters(
       this.selectedEntities,
       this.exportFields,
@@ -258,7 +239,6 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
-    // 3. Generuj eksport i pobieraj (ścieżka asynchroniczna)
     this.loading = true; 
 
     this.exportService.generateExport(
@@ -270,10 +250,8 @@ export class MainComponent implements OnInit, OnDestroy, AfterViewInit {
     ).subscribe({
       next: (result: ExportResult) => { 
          this.exportService.downloadContent(result.fileContent); 
-        // Pobieranie od razu wyświetla alert sukcesu w serwisie
       },
       error: (err) => {
-        // Sugestia: dodaj klucz 'Main.Alerts.DownloadError' do plików tłumaczeń
         this.alert.error(this.translate.instant('Main.Alerts.DownloadError', { fallback: 'Main.Alerts.PreviewError' }) + ': ' + err.message);
       }
     });

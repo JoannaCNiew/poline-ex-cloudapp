@@ -11,8 +11,8 @@ describe('AppComponent', () => {
     TestBed.configureTestingModule({
       declarations: [AppComponent],
       imports: [
-        RouterTestingModule, // Potrzebne dla <router-outlet>
-        AlertModule          // Potrzebne dla <cloudapp-alert>
+        RouterTestingModule,
+        AlertModule          
       ]
     }).compileComponents();
   }));

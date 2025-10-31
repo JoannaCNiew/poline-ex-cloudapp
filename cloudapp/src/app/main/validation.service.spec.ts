@@ -1,18 +1,17 @@
 import { TestBed } from '@angular/core/testing';
 import { ValidationService } from './validation.service';
-import { Entity, EntityType } from '@exlibris/exl-cloudapp-angular-lib'; // <-- POPRAWKA: Zaimportowano EntityType
+import { Entity, EntityType } from '@exlibris/exl-cloudapp-angular-lib'; 
 import { FieldConfig } from '../models/settings';
 
 describe('ValidationService', () => {
   let service: ValidationService;
 
-  // Przykładowe dane mockowe
   const mockEntities: Entity[] = [
     { 
       id: '1', 
       link: 'link1', 
       description: 'Test Entity', 
-      type: EntityType.PO_LINE // <-- POPRAWKA: Użyto enuma EntityType
+      type: EntityType.PO_LINE 
     }
   ];
   
@@ -54,7 +53,6 @@ describe('ValidationService', () => {
     });
 
     it('should return "Main.Alerts.SettingsNotReady" if header is null', () => {
-      // Zakładając, że `!header` ma również przechwycić `null`
       const result = service.validateExportParameters(mockEntities, mockFields, null as any);
       expect(result).toBe('Main.Alerts.SettingsNotReady');
     });
