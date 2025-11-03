@@ -6,26 +6,31 @@ This README is in English. _Instrukcja w języku polskim znajduje się poniżej.
 
 This Cloud App allows you to select values from PO lines and then preview, copy and download them as a text file.
 The application works on any Alma page that contains a list of PO Lines.
-
+<br>
+</br>
 **Exporting PO Lines**
 
 Navigate to any page in Alma that displays a list of PO Lines.
 
-Click on the Cloud App Center icon and open the PO Line Export app.
+Click on the Cloud App Center icon and open the PO Line Export app (if you use it for the first time, you have to activate the app).
 
 The app will display a list of the PO Lines visible on the Alma page.
 
 Select the lines you wish to export. You can use the "Select All" checkbox or check individual lines.
 
+<img width="427" height="662" alt="main_eng" src="https://github.com/user-attachments/assets/15017b53-bdaa-4c02-bb41-4a2369dedf83" />
+
 Choose your desired action:
 
-  - Preview: Generate a quick view of the export data within the app.
+  - Preview: Generates a quick view of the export data within the app.
   
-  - Copy: Copy the formatted data to your clipboard.
+  - Copy: Copies the formatted data to your clipboard.
   
-  - Download: Download the data as a .txt file.
+  - Download: Downloads the data as a .txt file.
 
-[Obraz głównego interfejsu PO Line Export]
+<img width="426" height="857" alt="preview_eng" src="https://github.com/user-attachments/assets/f2f55e3c-4b38-4588-8829-f1acf6c5a488" />
+<br>
+</br>
 
 **Settings**
 
@@ -45,10 +50,14 @@ You can configure the following:
   
   - Reorder Columns: Drag and drop the columns to change the order they appear in the export.
 
+
+<img width="424" height="837" alt="settings_eng" src="https://github.com/user-attachments/assets/9f91ca6f-28c3-4457-b770-eb3b5f7089d4" />
+
 Note: Your settings are persistent. They will be saved even after you log out of Alma or change the interface language.
 
 You can restore the original settings at any time by clicking the Reset button.
-
+<br>
+</br>
 **Troubleshooting**
 
 _I don't see the Cloud App Center icon._
@@ -66,19 +75,22 @@ Try refreshing the Alma page and reopening the app. This app works by reading th
 -----------------------------------------------------------------------------------------------------------------
 **PO Line Export (instrukcja w języku polskim)**
 
-Aplikacja chmurowa pozwalająca na wybranie danych z linii zamówienia, a następnie podgląd ich, kopiowanie do schowka oraz pobranie pliku tekstowego.
+Aplikacja chmurowa, która pozwala na wybranie wartości (danych) z zaznaczonych linii zamówienia, a następnie na podgląd ich w aplikacji, skopiowanie do schowka oraz pobranie w formie pliku tekstowego.
 
 Aplikacja działa na dowolnej stronie w Almie, która zawiera listę linii zamówienia.
-
+<br>
+</br>
 **Eksportowanie linii zamówienia**
 
 Przejdź do dowolnej strony w Almie, która wyświetla listę linii zamówienia.
 
-Kliknij ikonę Centrum Aplikacji Chmurowych i otwórz aplikację PO Line Export.
+Kliknij ikonę Centrum Aplikacji Chmurowych i otwórz aplikację PO Line Export (jeśli używasz aplikacji po raz pierwszy, najpierw musisz ją aktywować).
 
 Aplikacja wyświetli listę linii zamówienia widocznych na stronie Almy.
 
 Zaznacz linie, które chcesz wyeksportować. Możesz użyć opcji "Zaznacz wszystko" lub zaznaczyć poszczególne linie ręcznie.
+
+<img width="429" height="471" alt="main_pol" src="https://github.com/user-attachments/assets/e3e62855-80b3-4dff-84a2-7231a65fc8ba" />
 
 Wybierz pożądaną akcję:
 
@@ -88,11 +100,13 @@ Wybierz pożądaną akcję:
   
   - Pobierz: Pobiera dane w postaci pliku .txt.
 
-[Obraz głównego interfejsu PO Line Export]
+<img width="422" height="701" alt="preview_pol" src="https://github.com/user-attachments/assets/60b63cfd-0ead-4677-a278-c14166fb24d8" />
+<br>
+</br>
 
 **Ustawienia**
 
-Aplikacja pozwala na pełne dostosowanie wyniku eksportu poprzez menu "Ustawienia".
+Aplikacja pozwala na dostosowanie podglądu i eksportu w Ustawieniach.
 
 Otwórz aplikację PO Line Export.
 
@@ -108,12 +122,15 @@ Możesz skonfigurować następujące elementy:
   
   - Zmień kolejność kolumn: Przeciągnij i upuść kolumny, aby zmienić kolejność ich pojawiania się w eksporcie.
 
+<img width="429" height="859" alt="settings_pol" src="https://github.com/user-attachments/assets/c59e8611-d797-4d28-bf97-96a59d9d91cd" />
+
 Uwaga: Twoje ustawienia zostaną zapisane nawet po wylogowaniu się z Almy lub zmianie języka interfejsu.
 
 Możesz przywrócić ustawienia domyślne w dowolnym momencie, klikając przycisk "Resetuj".
 
-[Obraz menu ustawień PO Line Export]
-
+<br>
+</br>
+  
 **Rozwiązywanie problemów**
 
 _Nie widzę ikony Cloud App Center._
