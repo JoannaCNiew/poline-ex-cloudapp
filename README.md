@@ -1,7 +1,5 @@
 This README is in English. _Instrukcja w języku polskim znajduje się poniżej._
 
-<a href="https://developers.exlibrisgroup.com/appcenter/po-line-export/"></a> <a href="https://developers.exlibrisgroup.com/appcenter/po-line-export/"></a>
-
 **PO Line Export**
 
 This Cloud App allows you to select PO lines, and then preview, copy and download values from them as a text file.
