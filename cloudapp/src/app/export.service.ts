@@ -156,7 +156,8 @@ export class ExportService {
                         return fundCodes || '';
                     }
                     case 'quantity': return (poLine.location || []).reduce((sum: number, loc: any) => sum + (loc.quantity || 0), 0);
-                    default: return '';
+                    case 'created_date': return poLine.created_date || '';
+                    default: return '';
                 }
             }).join('\t');
             fileContent += `${row}\n`;

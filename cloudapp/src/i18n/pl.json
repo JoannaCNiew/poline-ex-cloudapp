@@ -9,7 +9,8 @@
     "Price": "Cena",
     "Quantity": "Ilość",
     "Title": "Tytuł",
-    "Vendor": "Dostawca"
+    "Vendor": "Dostawca",
+    "CreatedDate": "Data utworzenia"
   },
   "Main": {
     "Alerts": {

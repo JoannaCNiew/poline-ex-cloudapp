@@ -13,4 +13,5 @@ export const AVAILABLE_FIELDS: FieldConfig[] = [
     { name: 'vendor', label: _('Fields.Vendor'), selected: false, customLabel: _('Fields.Vendor') },
     { name: 'price', label: _('Fields.Price'), selected: false, customLabel: _('Fields.Price') },
     { name: 'fund', label: _('Fields.Fund'), selected: false, customLabel: _('Fields.Fund') },
+    { name: 'created_date', label: _('Fields.CreatedDate'), selected: false, customLabel: _('Fields.CreatedDate') },
 ];

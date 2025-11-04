@@ -3,7 +3,7 @@
    "title": "PO Line Export",
    "subtitle": "This CloudApp facilitates PO lines download.",
    "author": "Joanna Cieloch-Niewiadomska",
-   "description": "This Cloud Application allows you to select values from PO lines and then preview, copy and download them as a text file.",
+   "description": "This Cloud Application allows you to select PO lines, and then preview, copy and download values from them as a text file.",
    "icon": {
       "type": "font",
       "value": "fa fa-cart-arrow-down"

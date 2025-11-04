@@ -9,7 +9,8 @@
     "Price": "Price",
     "Quantity": "Quantity",
     "Title": "Title",
-    "Vendor": "Vendor"
+    "Vendor": "Vendor",
+    "CreatedDate": "Created Date"
   },
   "Main": {
     "Alerts": {
