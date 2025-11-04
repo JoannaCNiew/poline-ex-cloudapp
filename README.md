@@ -4,7 +4,7 @@ This README is in English. _Instrukcja w języku polskim znajduje się poniżej.
 
 **PO Line Export**
 
-This Cloud App allows you to select values from PO lines and then preview, copy and download them as a text file.
+This Cloud App allows you to select PO lines, and then preview, copy and download values from them as a text file.
 The application works on any Alma page that contains a list of PO Lines.
 <br>
 </br>
@@ -75,7 +75,7 @@ Try refreshing the Alma page and reopening the app. This app works by reading th
 -----------------------------------------------------------------------------------------------------------------
 **PO Line Export (instrukcja w języku polskim)**
 
-Aplikacja chmurowa, która pozwala na wybranie wartości (danych) z zaznaczonych linii zamówienia, a następnie na podgląd ich w aplikacji, skopiowanie do schowka oraz pobranie w formie pliku tekstowego.
+Aplikacja chmurowa, która pozwala na wybranie linii zamówienia, a następnie na podgląd wybranych danych z nich w aplikacji, skopiowanie do schowka oraz pobranie w formie pliku tekstowego.
 
 Aplikacja działa na dowolnej stronie w Almie, która zawiera listę linii zamówienia.
 <br>
